@@ -13,7 +13,7 @@ BMC_SCRIPT="${WORKING_DIR}/bmc_generator.sh"
 DATASET_FILE="R01-R09.insertions.true.bed"
 DATASET_DIR="${WORKING_DIR}"
 DATASET_NAME="l1neo.ins_helas3.soni.hg19"
-BOOTSTRAP=20 # number of random or control dataset to generate
+BOOTSTRAP=1000 # number of random or control dataset to generate
 GC_WINDOW=10 # window of matching base composition around insertion site
 
 # move to working directory
