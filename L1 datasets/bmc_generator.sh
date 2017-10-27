@@ -9,7 +9,7 @@ GENOME=""
 # store usage explanations
 USAGE="\
 $script_name v$script_version:\tStarting from a .bed file with intervals of fixed length (short),\n\
-generates a random .bed file with intervals of identical size and matching base composition (bmc).\n\
+generates a random .bed file with intervals of identical size and matching base composition.\n\
 usage:\t$( basename $0 ) [options] -g <genome.fa> -i <input.bed> -o <output.bed>\n\
 options:\n\
 \t-h Print this help menu. \n\
