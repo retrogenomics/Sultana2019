@@ -80,6 +80,6 @@ cd base_comp_matched
 for file in *.bed;
 do
 	name=$(basename "${file}" .${GC_WINDOW}bp.bed)
-	awk -v OFS="\t" -v l=${length} 'BEGIN{i=1} ($1!~/^#/) {printf $1 "\t" $2+l-1 "\t" $2+l+1 "\tl1neo|insilico|soni|mrc|%04d\t1\t" $6 "\n", i; i++}' $file \
+	awk -v OFS="\t" -v l=${length} 'BEGIN{i=1} ($1!~/^#/) {printf $1 "\t" $2+l "\t" $2+l+2 "\tl1neo|insilico|soni|mrc|%04d\t1\t" $6 "\n", i; i++}' $file \
 	> "${name}.bed"
 done
