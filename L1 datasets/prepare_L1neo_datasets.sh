@@ -69,7 +69,7 @@ script_start="parallel "${BMC_SCRIPT}" -i "${DATASET_NAME}.10bp.bed" -g "${REF_G
 eval ${script_start}
 
 # repeat bmc script for some never-ending iterations:
-# script_start="parallel "${BMC_SCRIPT}" -i "${DATASET_NAME}.10bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${WORKING_DIR}/base_comp_matched/l1neo.bmc_{}.soni.hg19.bed" ::: 0001 0004 0005 0008"
+# script_start="parallel "${BMC_SCRIPT}" -i "${DATASET_NAME}.10bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${WORKING_DIR}/base_comp_matched/l1neo.mrc_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: 0001 0004 0005 0008"
 # eval ${script_start}
 
 # to get the average GC content at the insertion sites
