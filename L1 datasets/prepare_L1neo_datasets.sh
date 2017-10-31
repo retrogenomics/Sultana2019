@@ -35,7 +35,7 @@ NB_INSERTIONS=$( awk '$1!~/^#/' "${DATASET_DIR}/${DATASET_NAME}.bed" | wc -l )
 
 # idem without expanding lines (L1 target loci)
 sort -k1,1 -k2,2n "${DATASET_DIR}/${DATASET_FILE}" \
-| awk 'BEGIN {i=1} ($1!~/^#/) {printf $1 "\t" $2-1 "\t" $3+1 "\tl1neo|helas3|soni|loc|%04d\t1\t" $6 "\n", i; i++}' \
+| awk 'BEGIN {i=1} ($1!~/^#/) {printf $1 "\t" $2-1 "\t" $3+1 "\tl1neo|helas3|soni|loc|%04d\t" $5 "\t" $6 "\n", i; i++}' \
 > "l1neo.loc_helas3.soni.hg19.bed"
 
 # adjust the length of interval spanning each insertion to the size of GC_WINDOW
