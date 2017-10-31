@@ -8,11 +8,14 @@ BIOINFO="/Volumes/HD2/Lab/bioinfo"
 EXP_CONFIG="${BIOINFO}/references/experiments/atlas-neo-R01-to-R09.txt"
 DATA="${BIOINFO}/data/atlas-neo"
 VERSION="3.2"
-DATE="170418"
+DATE="171031"
 OUTPUT_DIR="${DATE}_atlas-neo_R01-to-R09"
 CURRENT_DIR=$( pwd )
-REF_GENOME_DIR="$BIOINFO/references/human"
+REF_GENOME_DIR="${BIOINFO}/references/human"
 REF_GENOME="hg19"
+DUKE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDukeMapabilityRegionsExcludable.bed"
+ENCODE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDacMapabilityConsensusExcludable.bed"
+HELA_GENOME="${BIOINFO}/annotations/hg19/other/hg19.helaMainChromosomes.bed"
 
 # make result directory
 mkdir -p ${OUTPUT_DIR}
@@ -34,6 +37,7 @@ done < "${EXP_CONFIG}"
 
 # identify independent sequencing runs
 uniq_run=($( printf "%s\n" ${run[*]} | sort -u ))
+echo ${uniq_run}
 
 # call atlas-clustering-neo.sh script for each run
 # note that it assumes that a given run is associated to a unique .fastq file
@@ -51,8 +55,8 @@ do
    		fi
    	done
   	# run identify insertion in each run
-   	atlas-clustering-neo.sh -o "${OUTPUT_DIR}" -b "${OUTPUT_DIR}/BC_R${value}.txt" "${DATA}/${fastq}"
-   	mv "${OUTPUT_DIR}/global.neo.3atlas.v${VERSION}.log" "${OUTPUT_DIR}/R${value}_global.neo.3atlas.v${VERSION}.log"
+#    	atlas-clustering-neo.sh -o "${OUTPUT_DIR}" -b "${OUTPUT_DIR}/BC_R${value}.txt" "${DATA}/${fastq}"
+#    	mv "${OUTPUT_DIR}/global.neo.3atlas.v${VERSION}.log" "${OUTPUT_DIR}/R${value}_global.neo.3atlas.v${VERSION}.log"
 done
 
 # multi-atlas-compare within each run
@@ -77,14 +81,50 @@ do
 		atlas-compare-samples.sh -n ${name_list} -s NB_NRR ${file_list} ;
 		cut -f1-8 multi-atlas-compare.NB_NRR.${name}.${name}.tab \
 		| awk '$1~/^#/ {print $0} $1!~/^#/ {OFS="\t"; print $1,$2,$3,$4,1,$6,$7,$8}' \
-		> multi-atlas-compare.NB_NRR.R${value}.tab ;
+		> multi-atlas-compare.NB_NRR.R${value}.tmp ;
 		rm multi-atlas-compare.NB_NRR.${name}.${name}.tab ;
 	else
 		name_list=$( echo ${name_list%?} );
 		file_list=$( echo ${file_list%?} );
 		atlas-compare-samples.sh -n ${name_list} -s NB_NRR ${file_list} ;
-		mv multi-atlas-compare.NB_NRR.R${value}_*.tab multi-atlas-compare.NB_NRR.R${value}.tab ;
+		mv multi-atlas-compare.NB_NRR.R${value}_*.tab multi-atlas-compare.NB_NRR.R${value}.tmp ;
 	fi
+
+	# filter for Hela main chromosomes only, exclude black listed genomic regions
+	# remove insertions corresponding to mapping artefact (insertion less than 500 bp from another insertion, supported with less reads, same orientation and same run)
+	n=$( head -1 multi-atlas-compare.NB_NRR.R${value}.tmp | awk '{print NF}' )
+
+	head -1 multi-atlas-compare.NB_NRR.R${value}.tmp \
+	> multi-atlas-compare.NB_NRR.R${value}.tab
+
+	field=$( echo | awk -v n=$n '{for (i=1;i<n;i++) {printf i","}; printf n}' )
+
+	sort -k1,1 -k2,2n multi-atlas-compare.NB_NRR.R${value}.tmp \
+	| bedtools intersect -v -a - -b ${DUKE_FILTER} \
+	| bedtools intersect -v -a - -b ${ENCODE_FILTER} \
+	| bedtools intersect -a - -b ${HELA_GENOME} \
+	| bedtools merge -s -d 500 -i - -c $field -o collapse \
+	| awk -v OFS="\t" -v n=$n -v h=$h '\
+		BEGIN {samples=n-7}
+		($5!~/,/) {for (i=5;i<n+4;i++) {printf $i "\t"}; printf $(n+4) "\n" }
+		($5~/,/) {
+			best=1
+			highest=0
+			for (i=NF-samples+1; i<=NF; i++) {
+				k=split($i,cov,",")
+				for (j=1;j<=k;j++) {
+					if (cov[j]>highest){highest=cov[j]; best=j}
+				}
+			}
+			for (i=1;i<=n;i++) {
+				split($(i+4),f,",")
+				if (i<n) {printf f[best] "\t"} else {printf f[best] "\n"}
+			}
+		}
+ 	' \
+	>> multi-atlas-compare.NB_NRR.R${value}.tab
+
+	rm multi-atlas-compare.NB_NRR.R${value}.tmp
 
 	# correct ID name and coordinates for intra-run comparison
 	sed "s/EXP/R${value}/g" "multi-atlas-compare.NB_NRR.R${value}.tab" \
@@ -106,6 +146,7 @@ done;
 name_list=$(echo ${name_list%?});
 file_list=$( echo ${file_list%?} );
 atlas-compare-samples.sh -n ${name_list} -s NB_SAMPLES ${file_list} ;
+atlas-compare-samples.sh -n ${name_list} -s NB_NRR ${file_list} ;
 
 # reformat coordinates to take into account bedtools merge bug on 0-length intervals
 name_list2=$( echo -ne ${name_list} | awk -F"," '{OFS="."; $NF=$NF; print $0}' )
