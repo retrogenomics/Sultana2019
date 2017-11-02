@@ -101,9 +101,9 @@ do
 	newline=$( bedtools random -l ${GC_WINDOW} -n 1 -g "${GENOME_DIR}/${GENOME_NAME}.genome" \
 	| bedtools nuc -fi ${GENOME} -bed - \
 	| tail -1 \
-	| awk '($1!~/^#/) {for (i=1;i<=6;i++) {printf $i "\t"}; printf "%.02f\n",$8}' )
+	| awk '($1!~/^#/ && $13==0) {for (i=1;i<=6;i++) {printf $i "\t"}; printf "%.02f\n",$8}' )
 	p=$( echo "$newline" | awk '{printf $NF}' )
-	if [[ "${nb[${p}]}" -gt 0 ]]
+	if [[ "${nb[${p}]}" -gt 0 ]] && [[ -n "$p" ]]
 	then
 		tmp="$tmp\n$newline"
 		if (( $r % 100 == 0 ))
