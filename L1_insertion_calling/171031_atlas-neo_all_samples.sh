@@ -15,7 +15,8 @@ REF_GENOME_DIR="${BIOINFO}/references/human"
 REF_GENOME="hg19"
 DUKE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDukeMapabilityRegionsExcludable.bed"
 ENCODE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDacMapabilityConsensusExcludable.bed"
-HELA_GENOME="${BIOINFO}/annotations/hg19/other/hg19.helaMainChromosomes.bed"
+GAPLESS_GENOME="${BIOINFO}/annotations/hg19/other/hg19.helaGapLessGenome.bed"
+
 s="************"
 # make result directory
 mkdir -p ${OUTPUT_DIR}
@@ -111,31 +112,6 @@ do
 
 	field=$( echo | awk -v n=$n '{for (i=1;i<n;i++) {printf i","}; printf n}' )
 
-# 	sort -k1,1 -k2,2n multi-atlas-compare.NB_NRR.R${value}.tmp \
-# 	| bedtools intersect -v -a - -b ${DUKE_FILTER} \
-# 	| bedtools intersect -v -a - -b ${ENCODE_FILTER} \
-# 	| bedtools intersect -a - -b ${HELA_GENOME} \
-# 	| bedtools merge -s -d 500 -i - -c $field -o collapse \
-# 	| awk -v OFS="\t" -v n=$n -v h=$h '\
-# 		BEGIN {samples=n-7}
-# 		($5!~/,/) {for (i=5;i<n+4;i++) {printf $i "\t"}; printf $(n+4) "\n" }
-# 		($5~/,/) {
-# 			best=1
-# 			highest=0
-# 			for (i=NF-samples+1; i<=NF; i++) {
-# 				k=split($i,cov,",")
-# 				for (j=1;j<=k;j++) {
-# 					if (cov[j]>highest){highest=cov[j]; best=j}
-# 				}
-# 			}
-# 			for (i=1;i<=n;i++) {
-# 				split($(i+4),f,",")
-# 				if (i<n) {printf f[best] "\t"} else {printf f[best] "\n"}
-# 			}
-# 		}
-#  	' \
-# 	>> multi-atlas-compare.NB_NRR.R${value}.tab
-
 	sort -k1,1 -k2,2n multi-atlas-compare.NB_NRR.R${value}.tmp \
 	| bedtools merge -s -d 500 -i - -c $field -o collapse \
 	| awk -v OFS="\t" -v n=$n -v h=$h '\
@@ -190,16 +166,12 @@ atlas-compare-samples.sh -n ${name_list} -s NB_SAMPLES ${file_list} ;
 # reformat coordinates to take into account bedtools merge bug on 0-length intervals
 name_list2=$( echo -ne ${name_list} | awk -F"," '{OFS="."; $NF=$NF; print $0}' )
 
-# awk '$1~/^#/ {print $0} $1!~/^#/ {printf $1"\t%.0f\t",($3+$2)/2; printf "%.0f\t",($3+$2)/2; for (i=4; i<NF; i++) {printf $i "\t"}; printf $NF "\n"}' multi-atlas-compare.NB_SAMPLES.${name_list2}.tab \
-# | sort -k1,1 -k2,2n \
-# > "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.tab"
-
 awk '$1~/^#/ {print $0} $1!~/^#/ {printf $1"\t%.0f\t",($3+$2)/2; printf "%.0f\t",($3+$2)/2; for (i=4; i<NF; i++) {printf $i "\t"}; printf $NF "\n"}' multi-atlas-compare.NB_SAMPLES.${name_list2}.tab \
 | sort -k1,1 -k2,2n \
 | bedtools intersect -v -a - -b ${DUKE_FILTER} \
 | bedtools intersect -v -a - -b ${ENCODE_FILTER} \
 | bedtools intersect -v -a - -b Blacklist_atlas.bed \
-| bedtools intersect -a - -b ${HELA_GENOME} \
+| bedtools intersect -a - -b ${GAPLESS_GENOME} \
 > "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.tab"
 
 cut -f1-6 "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.tab" \

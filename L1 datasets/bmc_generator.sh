@@ -103,15 +103,18 @@ do
 	| tail -1 \
 	| awk '($1!~/^#/ && $13==0) {for (i=1;i<=6;i++) {printf $i "\t"}; printf "%.02f\n",$8}' )
 	p=$( echo "$newline" | awk '{printf $NF}' )
-	if [[ "${nb[${p}]}" -gt 0 ]] && [[ -n "$p" ]]
-	then
-		tmp="$tmp\n$newline"
-		if (( $r % 100 == 0 ))
+	if [[ -n "$p" ]]
 		then
-			echo -ne "|"
+		if [[ "${nb[${p}]}" -gt 0 ]]
+		then
+			tmp="$tmp\n$newline"
+			if (( $r % 100 == 0 ))
+			then
+				echo -ne "|"
+			fi
+			(( --r ))
+			(( --nb[${p}] ))
 		fi
-		(( --r ))
-		(( --nb[${p}] ))
 	fi
 done
 echo -e "...Done"
