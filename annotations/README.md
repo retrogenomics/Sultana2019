@@ -32,8 +32,6 @@ Downloaded as .bed file from UCSC Table Browser:
 	[Track] Gap >
 	[Table] gap
 
-
-
 # Generated annotations
 
 **hg19.helaMainChromosomes.genome**
