@@ -119,7 +119,7 @@ echo -e "Done"
 
 # run external script to generate mrc using parallelization for loc
 mkdir -p mrc_loc/
-script_start="parallel "${MRC_SCRIPT}" -i "${LOC_NAME}.${GC_WINDOW}bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${WORKING_DIR}/mrc_loc/l1neo.mrc_loc_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel "${MRC_SCRIPT}" -a allowed_genome_space.bed -i "${LOC_NAME}.${GC_WINDOW}bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${WORKING_DIR}/mrc_loc/l1neo.mrc_loc_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of bmc to span only 2nt-intervals
@@ -132,7 +132,7 @@ done
 
 # run external script to generate mrc using parallelization for ins
 mkdir -p mrc_ins/
-script_start="parallel "${MRC_SCRIPT}" -i "${INS_NAME}.${GC_WINDOW}bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${WORKING_DIR}/mrc_ins/l1neo.mrc_ins_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel "${MRC_SCRIPT}" -a allowed_genome_space.bed -i "${INS_NAME}.${GC_WINDOW}bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${WORKING_DIR}/mrc_ins/l1neo.mrc_ins_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of bmc to span only 2nt-intervals
