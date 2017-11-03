@@ -31,7 +31,7 @@ step=1	# store progress through the pipeline
 
 # test if CONFIG file exists
 configuration_file="${CURRENT_DIR}/CONFIG"
-if [ -f "$configuration_file" ];
+if [[ ! -e "$configuration_file" ]];
 	then
 		echo -e "\nMissing configuration file in ${CURRENT_DIR}.\n";
 		exit 1
