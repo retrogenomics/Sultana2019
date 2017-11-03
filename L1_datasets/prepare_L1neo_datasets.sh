@@ -84,7 +84,7 @@ bedtools subtract -a ${GAPLESS_GENOME} -b ${DUKE_FILTER} \
 mkdir -p random_loc
 for i in $( seq 1 ${BOOTSTRAP});
 do
-	TAG=$( printf "${WORKING_DIR}/random/l1neo.random_loc_%04d.soni.hg19.bed" $i )
+	TAG=$( printf "${WORKING_DIR}/random_loc/l1neo.random_loc_%04d.soni.hg19.bed" $i )
 	bedtools shuffle \
 		-incl "allowed_genome_space.bed" \
 		-noOverlapping \
@@ -99,7 +99,7 @@ done
 mkdir -p random_ins
 for i in $( seq 1 ${BOOTSTRAP});
 do
-	TAG=$( printf "${WORKING_DIR}/random/l1neo.random_ins_%04d.soni.hg19.bed" $i )
+	TAG=$( printf "${WORKING_DIR}/random_ins/l1neo.random_ins_%04d.soni.hg19.bed" $i )
 	bedtools shuffle \
 		-incl "allowed_genome_space.bed" \
 		-noOverlapping \
