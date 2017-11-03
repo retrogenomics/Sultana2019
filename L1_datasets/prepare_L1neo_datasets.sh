@@ -63,8 +63,8 @@ sort -k1,1 -k2,2n "${DATASET_DIR}/${DATASET_FILE}" \
 
 # adjust the length of interval spanning each insertion to the size of GC_WINDOW
 length=$( echo ${GC_WINDOW} | awk '{print int(($1/2)+0.5)-1}' )
-bedtools slop -b ${length} -i "${DATASET_NAME}.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
-> "${DATASET_NAME}.${GC_WINDOW}bp.bed"
+bedtools slop -b ${length} -i "${INS_NAME}.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+> "${INS_NAME}.${GC_WINDOW}bp.bed"
 
 echo -e "Done"
 
