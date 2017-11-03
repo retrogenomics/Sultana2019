@@ -17,9 +17,9 @@ CURRENT_DIR=$( pwd )
 
 # test if CONFIG file exists
 configuration_file="${CURRENT_DIR}/CONFIG"
-if [ -f "$configuration_file" ];
+if [ -f "${configuration_file}" ];
 	then
-		echo -e "\nMissing configuration file in ${CURRENT_DIR}.\n";
+		echo -e "\nMissing configuration file $( basename ${configuration_file} ) in ${CURRENT_DIR}.\n";
 		exit 1
 fi
 
