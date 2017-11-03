@@ -1,27 +1,27 @@
 # default folders and files
-
-# root directory
-ROOT="${HOME}"
-DATA="${ROOT}/data/atlas-neo"
-ISS_FOLDER="${ROOT}/project/iss"
-ANNOTATIONS="${ROOT}/project/iss/annotations"
-
-# where picard tools executable files have been installed
-PATH_TO_PICARD="/scratch/bin/picardtools"
-
-# where the reference genome files and indexes are stored
-REF_GENOME_DIR="${BIOINFO}/references/human"
-REF_GENOME="hg19"
-
 #
 # # root directory
-# ROOT="/Volumes/HD2/Lab/bioinfo"
-# ISS_FOLDER="${ROOT}/tmp3"
+# ROOT="${HOME}"
 # DATA="${ROOT}/data/atlas-neo"
+# ISS_FOLDER="${ROOT}/project/iss"
+# ANNOTATIONS="${ROOT}/project/iss/annotations"
 #
 # # where picard tools executable files have been installed
-# PATH_TO_PICARD='/usr/local/picard'
+# PATH_TO_PICARD="/scratch/bin/picardtools"
 #
 # # where the reference genome files and indexes are stored
 # REF_GENOME_DIR="${BIOINFO}/references/human"
 # REF_GENOME="hg19"
+#
+
+# root directory
+ROOT="/Volumes/HD2/Lab/bioinfo"
+ISS_FOLDER="${ROOT}/results/tmp3"
+DATA="${ROOT}/data/atlas-neo"
+
+# where picard tools executable files have been installed
+PATH_TO_PICARD='/usr/local/picard'
+
+# where the reference genome files and indexes are stored
+REF_GENOME_DIR="${BIOINFO}/references/human"
+REF_GENOME="hg19"
