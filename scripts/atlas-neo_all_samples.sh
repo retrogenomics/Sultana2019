@@ -10,24 +10,33 @@
 # run time ~2h30 on an iMac 27' (4-core Intel Core i7 at 3.4 MHz, 16 Go RAM)
 
 #################################################################################
-# Set global parameters, variables and folders
+# Load default folders for project, picard tools, reference genome, etc
 #################################################################################
 
-EXP_CONFIG="${BIOINFO}/experiments/atlas-neo-R01-to-R09.txt"
-DATA="${BIOINFO}/data/atlas-neo"
-VERSION="3.2" # atlas-clustering-neo.sh version (included in file names)
-DATE="171031"
-OUTPUT_DIR="${DATE}_atlas-neo_R01-to-R09"
+# test if CONFIG file exists
+configuration_file="${CURRENT_DIR}/CONFIG"
+if [ -f "$configuration_file" ];
+	then
+		echo -e "\nMissing configuration file in ${CURRENT_DIR}.\n";
+		exit 1
+fi
+
+# read CONFIG file
+while read line
+do
+    eval $( awk '$1!~/^#/ {print $0}' )
+done < "${configuration_file}"
+
+#################################################################################
+# Set additional global parameters, variables and folders
+#################################################################################
+
 CURRENT_DIR=$( pwd )
-REF_GENOME_DIR="${BIOINFO}/references/human"
-REF_GENOME="hg19"
-DUKE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDukeMapabilityRegionsExcludable.bed"
-ENCODE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDacMapabilityConsensusExcludable.bed"
-GAPLESS_GENOME="${BIOINFO}/annotations/hg19/other/hg19.helaGapLessGenome.bed"
 s="************"
 
-# make result directory
-mkdir -p ${OUTPUT_DIR}
+#
+# # make result directory
+# mkdir -p ${OUTPUT_DIR}
 
 # read EXP_CONFIG file
 echo -e "\n$s Read experiment metadata $s"
@@ -59,6 +68,7 @@ echo -e "\n$s L1 insertion calling $s"
 for value in ${uniq_run[*]};
 do
 	echo -ne "Run ${value}..."
+
 	# generate bc file for each run
 	echo -ne "" > "${OUTPUT_DIR}/BC_R${value}.txt"
 	for i in $( seq 1 ${#run[@]} );
@@ -69,10 +79,12 @@ do
        		fastq="${file[$i]}";
    		fi
    	done
+
   	# identify insertion in each run
-#    	atlas-clustering-neo.sh -o "${OUTPUT_DIR}" -b "${OUTPUT_DIR}/BC_R${value}.txt" "${DATA}/${fastq}"
-#    	mv "${OUTPUT_DIR}/global.neo.3atlas.v${VERSION}.log" "${OUTPUT_DIR}/R${value}_global.neo.3atlas.v${VERSION}.log"
+   	"${SCRIPTS}/atlas-clustering-neo.sh" -o "${OUTPUT_DIR}" -b "${OUTPUT_DIR}/BC_R${value}.txt" "${DATA}/${fastq}"
+   	mv "${OUTPUT_DIR}/global.neo.3atlas.log" "${OUTPUT_DIR}/R${value}_global.neo.3atlas.log"
 	rm "${OUTPUT_DIR}/BC_R${value}.txt"
+
 	echo -e "Done"
 done
 
@@ -93,7 +105,7 @@ do
 	echo -e "\n$s Run #${value}"
 	name_list="";
 	file_list="";
-	for file in R${value}*.neo.3atlas.v${VERSION}.insertions.true.bed ;
+	for file in R${value}*.neo.3atlas.insertions.true.bed ;
 	do
 		name=$( echo -e $file | awk -F "." '{printf $1}' ) ;
 		name_list=${name_list}$(printf ${name}",") ;
@@ -106,7 +118,7 @@ do
 	then
 		name_list=${name_list}$( echo ${name_list%?} ) ;
 		file_list=${file_list}$( echo ${file_list%?} ) ;
-		atlas-compare-samples.sh -n ${name_list} -s NB_NRR ${file_list} ;
+		"${SCRIPTS}/atlas-compare-samples.sh" -n ${name_list} -s NB_NRR ${file_list} ;
 		cut -f1-8 multi-atlas-compare.NB_NRR.${name}.${name}.tab \
 		| awk '$1~/^#/ {print $0} $1!~/^#/ {OFS="\t"; print $1,$2,$3,$4,1,$6,$7,$8}' \
 		> multi-atlas-compare.NB_NRR.R${value}.tmp ;
@@ -114,7 +126,7 @@ do
 	else
 		name_list=$( echo ${name_list%?} );
 		file_list=$( echo ${file_list%?} );
-		atlas-compare-samples.sh -n ${name_list} -s NB_NRR ${file_list} ;
+		"${SCRIPTS}/atlas-compare-samples.sh" -n ${name_list} -s NB_NRR ${file_list} ;
 		mv multi-atlas-compare.NB_NRR.R${value}_*.tab multi-atlas-compare.NB_NRR.R${value}.tmp ;
 	fi
 
@@ -184,7 +196,7 @@ do
 done;
 name_list=$(echo ${name_list%?});
 file_list=$( echo ${file_list%?} );
-atlas-compare-samples.sh -n ${name_list} -s NB_SAMPLES ${file_list} ;
+"${SCRIPTS}/atlas-compare-samples.sh" -n ${name_list} -s NB_SAMPLES ${file_list} ;
 
 # reformat coordinates to take into account bedtools merge bug on 0-length intervals
 name_list2=$( echo -ne ${name_list} | awk -F"," '{OFS="."; $NF=$NF; print $0}' )
