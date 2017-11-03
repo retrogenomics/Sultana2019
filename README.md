@@ -16,17 +16,27 @@ Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
 - GNU grep/awk
 
 ### Other requirements
-- A human reference genome sequence (ex:`hg19.fa`), and its bwa index (ex: `hg19.fa.amb, .ann, .bwt, .fai, .pac, .sa`)
+- A human reference genome sequence (ex:`hg19.fa`), 
+- and its bwa index (ex: `hg19.fa.amb, .ann, .bwt, .fai, .pac, .sa`)
 
 ### Procedure
 1. Download from GitHub:
-```git clone https://github.com/retrogenomics/iss.git```
-2. Edit the `CONFIG` file in the `iss/scripts/`folder according to your configuration
-3. Edit the experiment configuration file (sequencing metadata) according to your sequencing data. This file is stored in the `iss/experiments/`folder and its name and location should be included in the `CONFIG`file as `EXP_CONFIG="${EXPERIMENTS}/<your file name>"`). The default file is `atlas-neo-R01-to-R09.txt`.
+```
+git clone https://github.com/retrogenomics/iss.git
+```
+2. Edit the `CONFIG` file in the `iss/scripts/` folder according to your configuration
+3. Edit the experiment configuration file (sequencing metadata) according to your sequencing data.
+   - This file is stored in the `iss/experiments/` folder and its name.
+   - Its location should be included in the `CONFIG`file as `EXP_CONFIG="${EXPERIMENTS}/<your file name>"`.
+   - `atlas-neo-R01-to-R09.txt` is the default example.
 4. Process sequencing data and get L1 insertions by running `atlas-neo_all_samples.sh `:
-
 ```bash
 cd iss/scripts
 ./atlas-neo_all_samples.sh 
 ```
-5. Reformat L1 data and generate control files by running `
+5. Reformat L1 data and generate control files by running `prepare_L1neo_datasets.sh`
+```bash
+cd iss/datasets/l1neo
+./prepare_L1neo_datasets.sh
+```
+
