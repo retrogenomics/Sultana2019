@@ -2,7 +2,7 @@
 
 ## Version 3.3 (3-Nov-2017)
 Bug Fixes
-=========
+---------
 Initial commit
 
 Enhancements
