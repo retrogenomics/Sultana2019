@@ -1,13 +1,21 @@
-#!/opt/local/bin/bash
-# update the EXP_CONFIG file and the folders below
-# from a serie of atlas-seq neo run, identify insertion points and compare multiple independent experiments
-# run time ~2h30
+#!/usr/bin/env bash
 
-# define folders
-BIOINFO="/Volumes/HD2/Lab/bioinfo"
-EXP_CONFIG="${BIOINFO}/references/experiments/atlas-neo-R01-to-R09.txt"
+#################################################################################
+# Script to process multiple sequencing runs of several multiplexed
+# atlas-seq-neo libraries and call de novo l1 insertions
+#################################################################################
+
+# The EXP_CONFIG file needs to be filled with sequencing run metadata (sample, run and file names, barcode names and sequences)
+# from a serie of atlas-seq neo run, identify insertion points and compare multiple independent experiments
+# run time ~2h30 on an iMac 27' (4-core Intel Core i7 at 3.4 MHz, 16 Go RAM)
+
+#################################################################################
+# Set global parameters, variables and folders
+#################################################################################
+
+EXP_CONFIG="${BIOINFO}/experiments/atlas-neo-R01-to-R09.txt"
 DATA="${BIOINFO}/data/atlas-neo"
-VERSION="3.2"
+VERSION="3.2" # atlas-clustering-neo.sh version (included in file names)
 DATE="171031"
 OUTPUT_DIR="${DATE}_atlas-neo_R01-to-R09"
 CURRENT_DIR=$( pwd )
@@ -16,8 +24,8 @@ REF_GENOME="hg19"
 DUKE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDukeMapabilityRegionsExcludable.bed"
 ENCODE_FILTER="${BIOINFO}/annotations/hg19/other/hg19.wgEncodeDacMapabilityConsensusExcludable.bed"
 GAPLESS_GENOME="${BIOINFO}/annotations/hg19/other/hg19.helaGapLessGenome.bed"
-
 s="************"
+
 # make result directory
 mkdir -p ${OUTPUT_DIR}
 
@@ -41,8 +49,10 @@ done < "${EXP_CONFIG}"
 # identify independent sequencing runs
 uniq_run=($( printf "%s\n" ${run[*]} | sort -u ))
 
-# call atlas-clustering-neo.sh script for each run
-# note that it assumes that a given run is associated to a unique .fastq file
+#################################################################################
+# Call atlas-clustering-neo.sh script for each run
+# Note that it assumes that a given run is associated to a unique .fastq file
+#################################################################################
 
 echo -e "\n$s L1 insertion calling $s"
 
@@ -59,14 +69,19 @@ do
        		fastq="${file[$i]}";
    		fi
    	done
-  	# run identify insertion in each run
+  	# identify insertion in each run
 #    	atlas-clustering-neo.sh -o "${OUTPUT_DIR}" -b "${OUTPUT_DIR}/BC_R${value}.txt" "${DATA}/${fastq}"
 #    	mv "${OUTPUT_DIR}/global.neo.3atlas.v${VERSION}.log" "${OUTPUT_DIR}/R${value}_global.neo.3atlas.v${VERSION}.log"
 	rm "${OUTPUT_DIR}/BC_R${value}.txt"
 	echo -e "Done"
 done
 
-# multi-atlas-compare within each run
+#################################################################################
+# Compare called L1s in each run
+# Pool insertions at the same place in a given run (barcode contaminations)
+# Exclude insertions less than 500 bp from another one, represented by less reads
+# in a given run and add them to a black list (mapping errors in homopolymers)
+#################################################################################
 
 echo -e "\n$s Intra-run comparisons $s"
 
@@ -103,15 +118,17 @@ do
 		mv multi-atlas-compare.NB_NRR.R${value}_*.tab multi-atlas-compare.NB_NRR.R${value}.tmp ;
 	fi
 
-	# filter for Hela main chromosomes only, exclude black listed genomic regions
 	# remove insertions corresponding to mapping artefact (insertion less than 500 bp from another insertion, supported with less reads, same orientation and same run)
-	n=$( head -1 multi-atlas-compare.NB_NRR.R${value}.tmp | awk '{print NF}' )
+	n=$( head -1 multi-atlas-compare.NB_NRR.R${value}.tmp | awk '{print NF}' ) # number of fields in table
 
+	# print header
 	head -1 multi-atlas-compare.NB_NRR.R${value}.tmp \
 	> multi-atlas-compare.NB_NRR.R${value}.tab
 
+	# prepare the columns to be displayed by bedtools merge
 	field=$( echo | awk -v n=$n '{for (i=1;i<n;i++) {printf i","}; printf n}' )
 
+	# merge insertions with minor number of reads to main one when less than 500 bp from each other
 	sort -k1,1 -k2,2n multi-atlas-compare.NB_NRR.R${value}.tmp \
 	| bedtools merge -s -d 500 -i - -c $field -o collapse \
 	| awk -v OFS="\t" -v n=$n -v h=$h '\
@@ -148,9 +165,15 @@ do
 	> "R${value}.insertions.true.bed" ;
 done
 
-# multi-atlas-compare between runs
+#################################################################################
+# Compare called L1s in all runs
+# Exclude L1 calls in blacklisted regions (internal, ENCODE or Duke)
+# Keep only those falling in main chromosomes and outside gaps
+#################################################################################
+
 echo -e "\n$s Inter-run comparison and insertion filtering $s"
 
+# compare L1 insertions from all runs
 name_list="";
 file_list="";
 for value in ${uniq_run[*]};
@@ -166,6 +189,7 @@ atlas-compare-samples.sh -n ${name_list} -s NB_SAMPLES ${file_list} ;
 # reformat coordinates to take into account bedtools merge bug on 0-length intervals
 name_list2=$( echo -ne ${name_list} | awk -F"," '{OFS="."; $NF=$NF; print $0}' )
 
+# filter out blacklisted regions and keep only those in main assembled chromosomes
 awk '$1~/^#/ {print $0} $1!~/^#/ {printf $1"\t%.0f\t",($3+$2)/2; printf "%.0f\t",($3+$2)/2; for (i=4; i<NF; i++) {printf $i "\t"}; printf $NF "\n"}' multi-atlas-compare.NB_SAMPLES.${name_list2}.tab \
 | sort -k1,1 -k2,2n \
 | bedtools intersect -v -a - -b ${DUKE_FILTER} \
@@ -174,6 +198,7 @@ awk '$1~/^#/ {print $0} $1!~/^#/ {printf $1"\t%.0f\t",($3+$2)/2; printf "%.0f\t"
 | bedtools intersect -a - -b ${GAPLESS_GENOME} \
 > "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.tab"
 
+# reformat in true bed format
 cut -f1-6 "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.tab" \
 | sort -k1,1 -k2,2n \
 > "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.true.bed"

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #################################################################################
 # Script to generate a matched random control dataset where intervals have
@@ -34,7 +34,7 @@ options:\n\
 #################################################################################
 
 # parse script arguments
-while getopts 'hvag:i:o:' opt ; do
+while getopts 'hva:g:i:o:' opt ; do
 	case $opt in
 		g) GENOME=$OPTARG ;;
 		i) INPUT_FILE=$OPTARG ;;

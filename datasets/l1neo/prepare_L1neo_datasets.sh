@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #################################################################################
 # Script to prepare L1 insertion datasets and their control datasets
