@@ -1,21 +1,30 @@
-# default folders and files
+#################################################################################
+# Configure default folders and files
+# (should be adjusted for each user)
+#################################################################################
 
-# main directories
+# root of working directory
 ROOT="${HOME}"
+
+# sequencing data directory
 DATA="${ROOT}/data/atlas-neo"
+
+# installation folder of Picard tools
+PATH_TO_PICARD="/scratch/bin/picardtools"
+
+# where the reference genome files and indexes are stored, and reference genome version
+REF_GENOME_DIR="${ROOT}/references/human"
+REF_GENOME="hg19"
+
+# installation folder of iss
 ISS_FOLDER="${ROOT}/tmp3/iss"
+
+# iss default folders (in principle, does not need to be changed)
 ANNOTATIONS="${ISS_FOLDER}/annotations"
 EXPERIMENTS="${ISS_FOLDER}/experiments"
 SCRIPTS="${ISS_FOLDER}/scripts"
 
-# where picard tools executable files have been installed
-PATH_TO_PICARD="/scratch/bin/picardtools"
-
-# where the reference genome files and indexes are stored
-REF_GENOME_DIR="${ROOT}/references/human"
-REF_GENOME="hg19"
-
-# required annotation files
+# required annotation files (in principle, does not need to be changed)
 DUKE_FILTER="${ANNOTATIONS}/hg19.wgEncodeDukeMapabilityRegionsExcludable.bed"
 ENCODE_FILTER="${ANNOTATIONS}/hg19.wgEncodeDacMapabilityConsensusExcludable.bed"
 GAPLESS_GENOME="${ANNOTATIONS}/hg19.helaGapLessGenome.bed"
@@ -26,17 +35,3 @@ EXP_CONFIG="${EXPERIMENTS}/test.txt"
 # where to save the new analysis (L1 calling)
 DATE="171031"
 OUTPUT_DIR="${EXPERIMENTS}/${DATE}_atlas-neo_R01-to-R09"
-
-
-#
-# # root directory
-# ROOT="/Volumes/HD2/Lab/bioinfo"
-# ISS_FOLDER="${ROOT}/results/tmp3"
-# DATA="${ROOT}/data/atlas-neo"
-#
-# # where picard tools executable files have been installed
-# PATH_TO_PICARD='/usr/local/picard'
-#
-# # where the reference genome files and indexes are stored
-# REF_GENOME_DIR="${BIOINFO}/references/human"
-# REF_GENOME="hg19"
