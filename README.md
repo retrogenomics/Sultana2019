@@ -1,4 +1,4 @@
-# iss_scripts
+# iss
 Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
 - to call L1 insertions from sequencing data
 - to format datasets
