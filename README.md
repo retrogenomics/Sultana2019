@@ -15,4 +15,18 @@ Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
 - [seqtk](https://github.com/lh3/seqtk) (tested version: 1.0; note that seqtk is only required if subsampling of sequencing data is used - to reduce time of analysis in tests)
 - GNU grep/awk
 
+### Other requirements
+- A human reference genome sequence (ex:`hg19.fa`), and its bwa index (ex: `hg19.fa.amb, .ann, .bwt, .fai, .pac, .sa`)
+
 ### Procedure
+1. Download from GitHub:
+```git clone https://github.com/retrogenomics/iss.git```
+2. Edit the `CONFIG` file in the `iss/scripts/`folder according to your configuration
+3. Edit the experiment configuration file (sequencing metadata) according to your sequencing data. This file is stored in the `iss/experiments/`folder and its name and location should be included in the `CONFIG`file as `EXP_CONFIG="${EXPERIMENTS}/<your file name>"`). The default file is `atlas-neo-R01-to-R09.txt`.
+4. Process sequencing data and get L1 insertions by running `atlas-neo_all_samples.sh `:
+
+```bash
+cd iss/scripts
+./atlas-neo_all_samples.sh 
+```
+5. Reformat L1 data and generate control files by running `
