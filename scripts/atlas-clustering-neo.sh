@@ -156,7 +156,7 @@ $cmd_line\n\
 $starline\n\
 ${exp_name}' ATLAS-seq experiment \n\
 Sequencing data:\t${data_dir}/${data_name} \n\
-Reference genome file:\t${ref_genome_dir}/${ref_genome} \n\
+Reference genome file:\t${REF_GENOME_DIR}/${REF_GENOME}.fa \n\
 Barcodes:\t\t${barcode_dir}/${barcode} \n\
 Output directory:\t${results_dir} \n\
 Samples: \n"

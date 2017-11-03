@@ -35,7 +35,6 @@ done < "${configuration_file}"
 
 s="************"
 
-
 # make result directory
 mkdir -p ${OUTPUT_DIR}
 
@@ -68,7 +67,7 @@ echo -e "\n$s L1 insertion calling $s"
 
 for value in ${uniq_run[*]};
 do
-	echo -ne "Run ${value}..."
+	echo -e "Run ${value}: Start"
 
 	# generate bc file for each run
 	echo -ne "" > "${OUTPUT_DIR}/BC_R${value}.txt"
@@ -86,7 +85,7 @@ do
    	mv "${OUTPUT_DIR}/global.neo.3atlas.log" "${OUTPUT_DIR}/R${value}_global.neo.3atlas.log"
 	rm "${OUTPUT_DIR}/BC_R${value}.txt"
 
-	echo -e "Done"
+	echo -e "Run ${value}: End"
 done
 
 #################################################################################

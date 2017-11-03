@@ -12,7 +12,7 @@ SCRIPTS="${ISS_FOLDER}/scripts"
 PATH_TO_PICARD="/scratch/bin/picardtools"
 
 # where the reference genome files and indexes are stored
-REF_GENOME_DIR="${BIOINFO}/references/human"
+REF_GENOME_DIR="${ROOT}/references/human"
 REF_GENOME="hg19"
 
 # required annotation files
