@@ -1,6 +1,14 @@
 #!/bin/bash
 
-##### insertion datasets used to generate final figures of Sultana et al. article on L1 insertion site preference
+#################################################################################
+# Script to prepare L1 insertion datasets and their control datasets			#
+# (random and matched random controls) for Sultana et al. article on			#
+# L1 insertion site preference													#
+#################################################################################
+
+#################################################################################
+# Set global parameters, variables and folders									#
+#################################################################################
 
 # define folders
 BIOINFO="$HOME"
