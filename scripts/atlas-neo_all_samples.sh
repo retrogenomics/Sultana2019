@@ -13,6 +13,8 @@
 # Load default folders for project, picard tools, reference genome, etc
 #################################################################################
 
+CURRENT_DIR=$( pwd )
+
 # test if CONFIG file exists
 configuration_file="${CURRENT_DIR}/CONFIG"
 if [ -f "$configuration_file" ];
@@ -31,7 +33,6 @@ done < "${configuration_file}"
 # Set additional global parameters, variables and folders
 #################################################################################
 
-CURRENT_DIR=$( pwd )
 s="************"
 
 #
