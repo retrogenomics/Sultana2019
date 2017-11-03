@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #################################################################################
-# Script to prepare L1 insertion datasets and their control datasets			#
-# (random and matched random controls) for Sultana et al. article on			#
-# L1 insertion site preference													#
+# Script to prepare L1 insertion datasets and their control datasets
+# (random and matched random controls) for Sultana et al. article on
+# L1 insertion site preference
 #################################################################################
 
 #################################################################################
-# Set global parameters, variables and folders									#
+# Set global parameters, variables and folders
 #################################################################################
 
 # define folders
@@ -33,7 +33,7 @@ GC_WINDOW=10 # window of matching base composition around insertion site
 cd ${WORKING_DIR}
 
 #################################################################################
-# Reformat L1 insertion data files												#
+# Reformat L1 insertion data files
 #################################################################################
 
 echo -ne "Reformat data files..."
@@ -69,7 +69,7 @@ bedtools slop -b ${length} -i "${DATASET_NAME}.bed" -g "${REF_GENOME_DIR}/${REF_
 echo -e "Done"
 
 #################################################################################
-# Generate random dataset for ins and loc										#
+# Generate random dataset for ins and loc
 #################################################################################
 
 echo -ne "Generate random dataset..."
@@ -113,8 +113,8 @@ done
 echo -e "Done"
 
 #################################################################################
-# Generate l1 matched random control (mrc) dataset for ins and loc				#
-# Base composition in a window of GC_WINDOW bp around ins is conserved			#
+# Generate l1 matched random control (mrc) dataset for ins and loc
+# Base composition in a window of GC_WINDOW bp around ins is conserved
 #################################################################################
 
 # run external script to generate mrc using parallelization for loc
