@@ -17,7 +17,7 @@ CURRENT_DIR=$( pwd )
 
 # test if CONFIG file exists
 configuration_file="${CURRENT_DIR}/CONFIG"
-if [ -f "${configuration_file}" ];
+if [[ ! -e "${configuration_file}" ]];
 	then
 		echo -e "\nMissing configuration file $( basename ${configuration_file} ) in ${CURRENT_DIR}.\n";
 		exit 1
@@ -35,9 +35,9 @@ done < "${configuration_file}"
 
 s="************"
 
-#
-# # make result directory
-# mkdir -p ${OUTPUT_DIR}
+
+# make result directory
+mkdir -p ${OUTPUT_DIR}
 
 # read EXP_CONFIG file
 echo -e "\n$s Read experiment metadata $s"
