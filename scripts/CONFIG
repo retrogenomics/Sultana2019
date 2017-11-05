@@ -33,5 +33,5 @@ GAPLESS_GENOME="${ANNOTATIONS}/hg19.helaGapLessGenome.bed"
 EXP_CONFIG="${EXPERIMENTS}/test.txt"
 
 # where to save the new analysis (L1 calling)
-DATE="171031"
+DATE="171104"
 OUTPUT_DIR="${EXPERIMENTS}/${DATE}_atlas-neo_R01-to-R09"
