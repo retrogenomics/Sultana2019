@@ -12,7 +12,7 @@
 
 # define folders
 CURRENT_DIR=$( pwd )
-MRC_SCRIPT="${CURRENT_DIR}/l1_mrc_generator.sh"
+MRC_SCRIPT="${SCRIPTS}/l1_mrc_generator.sh"
 
 # set global variables
 DATASET_FILE="R01-R09.insertions.true.bed"
@@ -24,7 +24,8 @@ BOOTSTRAP=1000 # number of random or control dataset to generate
 GC_WINDOW=10 # window of matching base composition around insertion site
 
 # move to working directory
-cd ${CURRENT_DIR}
+mkdir -p "${DATASETS}/l1neo"
+cd "${DATASETS}/l1neo"
 
 #################################################################################
 # Load default folders for project, picard tools, reference genome, etc
