@@ -23,6 +23,7 @@ ISS_FOLDER="${ROOT}/tmp3/iss"
 ANNOTATIONS="${ISS_FOLDER}/annotations"
 EXPERIMENTS="${ISS_FOLDER}/experiments"
 SCRIPTS="${ISS_FOLDER}/scripts"
+DATASETS="${ISS_FOLDER}/datasets"
 
 # required annotation files (in principle, does not need to be changed)
 DUKE_FILTER="${ANNOTATIONS}/hg19.wgEncodeDukeMapabilityRegionsExcludable.bed"
