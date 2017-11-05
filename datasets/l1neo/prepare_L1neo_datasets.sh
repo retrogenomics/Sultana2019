@@ -134,7 +134,7 @@ mkdir -p mrc_loc/
 script_start="parallel "${MRC_SCRIPT}" -a allowed_genome_space.bed -i "${LOC_NAME}.${GC_WINDOW}bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${CURRENT_DIR}/mrc_loc/l1neo.mrc_loc_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
-# modify coordinates of bmc to span only 2nt-intervals
+# modify coordinates of mrc to span only 2nt-intervals
 for file in mrc_loc/*.${GC_WINDOW}bp.bed;
 do
 	name=$(basename "${file}" .${GC_WINDOW}bp.bed)
@@ -147,7 +147,7 @@ mkdir -p mrc_ins/
 script_start="parallel "${MRC_SCRIPT}" -a allowed_genome_space.bed -i "${INS_NAME}.${GC_WINDOW}bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${CURRENT_DIR}/mrc_ins/l1neo.mrc_ins_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
-# modify coordinates of bmc to span only 2nt-intervals
+# modify coordinates of mrc to span only 2nt-intervals
 for file in mrc_ins/*.${GC_WINDOW}bp.bed;
 do
 	name=$(basename "${file}" .${GC_WINDOW}bp.bed)
@@ -155,8 +155,8 @@ do
 	> "mrc_ins/${name}.bed"
 done
 
-# repeat bmc script for some never-ending iterations:
-# script_start="parallel "${BMC_SCRIPT}" -i "${DATASET_NAME}.10bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${CURRENT_DIR}/base_comp_matched/l1neo.mrc_loc_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: 0001 0004 0005 0008"
+# repeat mrc script for some never-ending iterations:
+# script_start="parallel "${MRC_SCRIPT}" -i "${DATASET_NAME}.10bp.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.fa" -o "${CURRENT_DIR}/mrc_ins/l1neo.mrc_ins_{}.soni.hg19.${GC_WINDOW}bp.bed" ::: 0001 0004 0005 0008"
 # eval ${script_start}
 
 # to get the average GC content at the insertion sites
