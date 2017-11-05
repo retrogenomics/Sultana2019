@@ -30,7 +30,7 @@ ENCODE_FILTER="${ANNOTATIONS}/hg19.wgEncodeDacMapabilityConsensusExcludable.bed"
 GAPLESS_GENOME="${ANNOTATIONS}/hg19.helaGapLessGenome.bed"
 
 # where the metadata of sequencing runs and barcodes are stored
-EXP_CONFIG="${EXPERIMENTS}/test.txt"
+EXP_CONFIG="${EXPERIMENTS}/atlas-neo-R01-to-R09.txt"
 
 # where to save the new analysis (L1 calling)
 DATE="171104"
