@@ -6,26 +6,7 @@
 # L1 insertion site preference
 #################################################################################
 
-#################################################################################
-# Set global parameters, variables and folders
-#################################################################################
-
-# define folders
 CURRENT_DIR=$( pwd )
-MRC_SCRIPT="${SCRIPTS}/l1_mrc_generator.sh"
-
-# set global variables
-DATASET_FILE="R01-R09.insertions.true.bed"
-DATASET_DIR="${OUTPUT_DIR}"
-INS_NAME="l1neo.ins_helas3.soni.hg19"
-LOC_NAME="l1neo.loc_helas3.soni.hg19"
-
-BOOTSTRAP=1000 # number of random or control dataset to generate
-GC_WINDOW=10 # window of matching base composition around insertion site
-
-# move to working directory
-mkdir -p "${DATASETS}/l1neo"
-cd "${DATASETS}/l1neo"
 
 #################################################################################
 # Load default folders for project, picard tools, reference genome, etc
@@ -44,6 +25,27 @@ while read line
 do
     eval $( awk '$1!~/^#/ {print $0}' )
 done < "${configuration_file}"
+
+#################################################################################
+# Set global parameters, variables and folders
+#################################################################################
+
+# define folders
+MRC_SCRIPT="${SCRIPTS}/l1_mrc_generator.sh"
+
+# set global variables
+DATASET_FILE="R01-R09.insertions.true.bed"
+DATASET_DIR="${OUTPUT_DIR}"
+INS_NAME="l1neo.ins_helas3.soni.hg19"
+LOC_NAME="l1neo.loc_helas3.soni.hg19"
+
+BOOTSTRAP=1000 # number of random or control dataset to generate
+GC_WINDOW=10 # window of matching base composition around insertion site
+
+# move to working directory
+mkdir -p "${DATASETS}/l1neo"
+cd "${DATASETS}/l1neo"
+
 
 #################################################################################
 # Reformat L1 insertion data files
