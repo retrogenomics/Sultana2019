@@ -234,7 +234,7 @@ mkdir -p "${DATASETS}/l1neo"
 ######### L1 target loci
 
 # define final file names for L1 target loci (non-redundant)
-LOC_NAME="l1neo.loc_helas3.soni.hg19"
+LOC_NAME="hg19.l1neo.soni.loc.helas3"
 
 # adjust the length of interval spanning each insertion to exactly 2bp
 sort -k1,1 -k2,2n "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.true.bed" \
@@ -247,7 +247,7 @@ cp "${LOC_NAME}.bed" "${DATASETS}/l1neo/"
 ######### L1 de novo insertions
 
 # define final file names for de novo insertions
-INS_NAME="l1neo.ins_helas3.soni.hg19"
+INS_NAME="hg19.l1neo.soni.ins.helas3"
 
 # adjust the length of interval spanning each insertion to exactly 2bp
 # expand the lines representing multiple insertions at the same position

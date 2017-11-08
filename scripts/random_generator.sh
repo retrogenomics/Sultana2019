@@ -75,13 +75,6 @@ then
 	echo -e $USAGE ; exit 1
 fi
 
-#
-# # define global variables
-# INPUT_NAME=$( basename ${INPUT_FILE} .bed )
-# GENOME_NAME=$( basename ${GENOME} .bed )
-# GENOME_DIR=$( dirname ${GENOME} )
-#
-
 # test if genomic space to pick up random intervals is restricted
 if [[ ! -z "${ALLOWED}" ]] ;
 then
@@ -96,10 +89,6 @@ then
 else
 	INCL=""
 fi
-
-# calculate number of lines in input file
-NB_INTERVALS=$( awk '$1!~/^#/' "${INPUT_FILE}" | wc -l )
-
 
 #################################################################################
 # Generate random dataset for ins and loc
