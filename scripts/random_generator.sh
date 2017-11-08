@@ -115,7 +115,7 @@ for i in $( seq 1 ${BOOTSTRAP});
 do
 	TAG=$( printf "${OUTPUT_DIR}/${OUTPUT_FILE_PREFIX}%04d${OUTPUT_FILE_SUFFIX}.bed" $i )
 	bedtools shuffle \
-		"${INCL}" \
+		$( eval "${INCL}" ) \
 		-noOverlapping \
 		-i "${INPUT_FILE}" \
 		-g "${GENOME}" \
