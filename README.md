@@ -40,11 +40,20 @@ cd iss/scripts
 ### To generate control L1 files
 ```bash
 cd iss/datasets/l1neo
-random_generator.sh \
+../../scripts/random_generator.sh \
 	-N 100 \
 	-n "l1neo|insilico|soni|random_loc" \
 	-g "../../annotations/hg19.helaAllowedGenomeSpace.bed" \
 	-i l1neo.loc_helas3.soni.hg19.bed \
-	-o random_loc
+	-o random_loc \
+	-p hg19.l1neo.soni.random_loc.
+	
+../../scripts/random_generator.sh \
+	-N 100 \
+	-n "l1neo|insilico|soni|random_ins" \
+	-g "../../annotations/hg19.helaAllowedGenomeSpace.bed" \
+	-i l1neo.ins_helas3.soni.hg19.bed \
+	-o random_ins \
+	-p hg19.l1neo.soni.random_ins.
 ```
 
