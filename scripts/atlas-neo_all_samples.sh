@@ -222,6 +222,45 @@ do
 	| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.target.site.2x${WINDOW}.fa" ;
 done
 
+#################################################################################
+# Reformat L1 insertion data files
+#################################################################################
+
+echo -ne "Reformat data files..."
+
+# create dataset folder for l1 neo
+mkdir -p "${DATASETS}/l1neo"
+
+######### L1 target loci
+
+# define final file names for L1 target loci (non-redundant)
+LOC_NAME="l1neo.loc_helas3.soni.hg19"
+
+# adjust the length of interval spanning each insertion to exactly 2bp
+sort -k1,1 -k2,2n "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.true.bed" \
+| awk 'BEGIN {i=1} ($1!~/^#/) {printf $1 "\t" $2-1 "\t" $3+1 "\tl1neo|helas3|soni|loc|%04d\t" $5 "\t" $6 "\n", i; i++}' \
+> "${LOC_NAME}.bed"
+
+# copy into main dataset folder
+cp "${LOC_NAME}.bed" "${DATASETS}/l1neo/"
+
+######### L1 de novo insertions
+
+# define final file names for de novo insertions
+INS_NAME="l1neo.ins_helas3.soni.hg19"
+
+# adjust the length of interval spanning each insertion to exactly 2bp
+# expand the lines representing multiple insertions at the same position
+sort -k1,1 -k2,2n "R${uniq_run[0]}-R${uniq_run[-1]}.insertions.true.bed" \
+| awk '($1!~/^#/) {while ($5--) {print $0}}' \
+| awk 'BEGIN {i=1} {printf $1 "\t" $2-1 "\t" $3+1 "\tl1neo|helas3|soni|ins|%04d\t1\t" $6 "\n", i; i++}' \
+> "${INS_NAME}.bed"
+
+# copy into main dataset folder
+cp "${INS_NAME}.bed" "${DATASETS}/l1neo/"
+
+echo -e "Done"
+
 # back to initial directory
 cd "${CURRENT_DIR}"
 
