@@ -114,14 +114,15 @@ step=$(( ${BOOTSTRAP} / 10 ))
 for i in $( seq 1 ${BOOTSTRAP});
 do
 	TAG=$( printf "${OUTPUT_DIR}/${OUTPUT_FILE_PREFIX}%04d${OUTPUT_FILE_SUFFIX}.bed" $i )
-	bedtools shuffle \
-		$( eval "${INCL}" ) \
+	COMMAND=$( bedtools shuffle \
+		${INCL} \
 		-noOverlapping \
 		-i "${INPUT_FILE}" \
 		-g "${GENOME}" \
 	| sort -k1,1 -k2,2n \
 	| awk -v OFS="\t" -v name="${INTERVAL_NAME}" 'BEGIN{j=1} ($1!~/^#/) {printf $1 "\t" $2 "\t" $3 "\t" name "|%04d\t1\t" $6 "\n", j; j++}' \
-	> "${TAG}"
+	> "${TAG}" )
+	eval ${COMMAND}
 
 	# print progression
 	if (( $i % step == 0 ))
