@@ -26,14 +26,12 @@ BOOTSTRAP=10
 
 # store usage explanations
 USAGE="\
-$script_name v$script_version:\tStarting from an input .bed file,\n\
-generates N random .bed file with intervals of identical sizes. \n\
-
+$script_name v$script_version:\tStarting from an input .bed file, generates N random .bed file with intervals of identical sizes. \n\n\
 usage:\t$( basename $0 ) [options] -g <genome.bed> -i <input.bed>\n\
 options:\n\
 \t-o Output folder [default=${OUTPUT_DIR}]. \n\
-\t-p Prefix of output files (before number) [default=${OUTPUT_FILE_PREFIX}]
-\t-s Prefix of output files (after number) [default=none]
+\t-p Prefix of output files (before number) [default=${OUTPUT_FILE_PREFIX}] \n\
+\t-s Prefix of output files (after number) [default=none] \n\
 \t-n Name of individual intervals (a unique number will be appended) [default=${INTERVAL_NAME}]. \n\
 \t-N Number of a random dataset to generate [default=${BOOTSTRAP}]. \n\
 \t-a A .bed file to specify the regions in the genome, which are allowed [default=none]. \n\
