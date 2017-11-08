@@ -61,3 +61,10 @@ bedtools subtract -a hg19.helaMainChromosomes.bed -b hg19.gapsSorted.bed \
 > hg19.helaGapLessGenome.bed
 ```
 
+**hg19.helaAllowedGenomeSpace.bed**
+```bash
+bedtools subtract -a hg19.helaGapLessGenome.bed -b hg19.wgEncodeDukeMapabilityRegionsExcludable.bed \
+| bedtools subtract -a - -b hg19.wgEncodeDacMapabilityConsensusExcludable.bed \
+| sort -k1,1 -k2,2n \
+> hg19.helaAllowedGenomeSpace.bed
+```
