@@ -135,7 +135,7 @@ do
 	| head -1 \
 	| bedtools nuc -fi "${GENOME_DIR}/${GENOME_NAME}.fa" -bed - \
 	| tail -1 \
-	| awk -v p=${GC_WINDOW} '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "1" "\t" p "\t" "%.02f\n",$8}' \
+	| awk -v p=${GC_WINDOW} '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "1" "\t" p "\t" $6 "\t" "%.02f\n", $8}' \
 	)
 
 	p=$( echo "$newline" | awk '{printf $NF}' )
