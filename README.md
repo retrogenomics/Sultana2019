@@ -29,14 +29,22 @@ git clone https://github.com/retrogenomics/iss.git
    - This file is stored in the `iss/experiments/` folder and its name.
    - Its location should be included in the `CONFIG`file as `EXP_CONFIG="${EXPERIMENTS}/<your file name>"`.
    - `atlas-neo-R01-to-R09.txt` is the default example.
-4. Process sequencing data and get L1 insertions by running `atlas-neo_all_samples.sh `:
+
+## How to use?
+### To process sequencing data and get L1 insertions
 ```bash
 cd iss/scripts
-./atlas-neo_all_samples.sh 
+./atlas-neo_all_samples.sh
 ```
-5. Reformat L1 data and generate control files by running `prepare_L1neo_datasets.sh`
+
+### To generate control L1 files
 ```bash
 cd iss/datasets/l1neo
-./prepare_L1neo_datasets.sh
+random_generator.sh \
+	-N 100 \
+	-n "l1neo|insilico|soni|random_loc" \
+	-g "../../annotations/hg19.helaAllowedGenomeSpace.bed" \
+	-i l1neo.loc_helas3.soni.hg19.bed \
+	-o random_loc
 ```
 
