@@ -188,8 +188,8 @@ mrc() {
 	plus=$( awk '$1!~/^#/ && $6=="+"' $2 | wc -l )
 
 	# create arbitrary intervals of GC_WINDOW size (for sense and antisense orientations)
-	sense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t+"
-	antisense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t-"
+	sense="chr1\t10\t$(( 10 + $7 ))\t.\t1\t+"
+	antisense="chr1\t10\t$(( 10 + $7 ))\t.\t1\t-"
 
 	tmp=""
 	while [[ "$r" -gt 0 ]] ;
