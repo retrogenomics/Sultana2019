@@ -68,7 +68,7 @@ cd iss/datasets/l1neo
 
 ```bash
 ../../scripts/mrc_generator.sh \
-	-N 10 \
+	-N 100 \
 	-n "l1neo|insilico|soni|mrc_loc" \
 	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
 	-g ../../annotations/hg19.genome \

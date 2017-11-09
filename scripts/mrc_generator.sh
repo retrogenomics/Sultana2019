@@ -252,7 +252,7 @@ export -f mrc
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
