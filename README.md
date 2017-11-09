@@ -91,6 +91,6 @@ Note that control datasets are generated using the same filters as the experimen
 	-g ../../annotations/hg19.genome \
 	-f ~/references/human/hg19.fa \
 	-i hg19.l1neo.soni.ins.helas3.bed \
-	-o mrc_loc \
+	-o mrc_ins \
 	-p hg19.l1neo.soni.mrc_ins.
 ```
