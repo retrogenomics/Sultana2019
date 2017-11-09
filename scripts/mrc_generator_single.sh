@@ -104,9 +104,9 @@ then
 	echo -e $USAGE ; exit 1
 else
 	INTERVAL_LENGTH=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq )
-	if [[ "${INTERVAL_LENGTH}" -ne 2 ]];
+	if [[ "${INTERVAL_LENGTH}" -ne "${GC_WINDOW}" ]];
 	then
-		echo -e "\nInterval length is not 2 bp in ${INPUT_FILE}.\n";
+		echo -e "\nInterval length is not ${GC_WINDOW} bp in ${INPUT_FILE}.\n";
 		echo -e $USAGE ; exit 1
 	fi
 fi
