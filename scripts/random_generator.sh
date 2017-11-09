@@ -91,7 +91,7 @@ else
 fi
 
 #################################################################################
-# Generate random dataset for ins and loc
+# Loop to generate BOOTSTRAP random datasets
 #################################################################################
 
 echo -ne "Generate random dataset"
