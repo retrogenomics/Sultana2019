@@ -175,7 +175,6 @@ echo -e "Done"
 # argument $7 is ${GC_WINDOW}
 
 mrc() {
-
     declare -A distrib=("${!1}")
 
 	#################################################################################
@@ -247,14 +246,13 @@ mrc() {
 	| awk '$1!=""' \
 	| sort -k1,1 -k2,2n \
 	> $6
-
 }
 
 export -f mrc
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ${GC_WINDOW}::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
