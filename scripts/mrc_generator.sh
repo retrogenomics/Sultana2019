@@ -48,7 +48,7 @@ options:\n\
 #################################################################################
 
 # parse script arguments
-while getopts 'hvg:f:a:i:o:n:p:s:N:' opt ; do
+while getopts 'hvg:f:a:i:o:n:p:s:N:w:' opt ; do
 	case $opt in
 		g) GENOME=$OPTARG ;;
 		f) GENOME_SEQ=$OPTARG ;;
@@ -140,124 +140,10 @@ bedtools nuc -fi "${GENOME_SEQ}" -bed "tmp.${GC_WINDOW}bp.${INPUT_FILE}" \
 
 echo -e "Done"
 
-#################################################################################
-# Store all the possible %GC found in input file and their number of occurence
-#################################################################################
-
-echo -ne "Store all the possible %GC found in input file and their number of occurence..."
-
-list_percent=$( \
-awk '$1!~/^#/ {print $7}' "tmp.withGCcontent.${INPUT_FILE}" \
-| sort -k1,1n \
-| uniq \
-| awk -F"\n" '{printf $1" "}' \
-| sed 's/.$//' \
-)
-
-declare -A nb
-for k in ${list_percent};
-do
-	nb[${k}]=$( awk -v k=$k '$NF==k' "tmp.withGCcontent.${INPUT_FILE}" | wc -l )
-	echo -e "%GC of $k is found ${nb[${k}]}."
-done
-
-echo -e "Done"
-
-#################################################################################
-# Declare function which generate an mrc file
-#################################################################################
-
-# argument $1 is nb[@]
-# argument $2 is "tmp.withGCcontent.${INPUT_FILE}"
-# argument $3 is ${ALLOWED}
-# argument $4 is ${GENOME}
-# argument $5 is ${GENOME_SEQ}
-# argument $6 is output file name
-# argument $7 is ${GC_WINDOW}
-
-mrc() {
-    declare -A distrib=("${!1}")
-
-	#################################################################################
-	# Generate random insertions matching GC content of input file
-	#################################################################################
-
-	# calculate number of lines in input file
-	r=$( awk '$1!~/^#/' $2 | wc -l )
-
-	# calculate number of sense strand in input file
-	plus=$( awk '$1!~/^#/ && $6=="+"' $2 | wc -l )
-
-	# create arbitrary intervals of GC_WINDOW size (for sense and antisense orientations)
-	sense="chr1\t10\t$(( 10 + $7 ))\t.\t1\t+"
-	antisense="chr1\t10\t$(( 10 + $7 ))\t.\t1\t-"
-
-	tmp=""
-	while [[ "$r" -gt 0 ]] ;
-	do
-		if [[ "$plus" -gt 0 ]] ;
-		then
-			newline=$( \
-			echo -e $sense \
-			| bedtools shuffle -noOverlapping -incl $3 -i - -g $4 \
-			| head -1 \
-			| bedtools nuc -fi $5 -bed - \
-			| tail -1 \
-			| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f\n", $8}' \
-			)
-			p=$( echo "$newline" | awk '{printf $NF}' )
-
-			# add interval if line is non empty and if the corresponding base composition is not fully represented yet in the output
-			if [[ -n "$p" ]]
-				then
-				if [[ "${distrib[${p}]}" -gt 0 ]]
-				then
-					echo -e "selected"
-					tmp="$tmp\n$newline"
-					(( --r ))
-					(( --distrib[${p}] ))
-					(( --plus ))
-				else
-					echo -e "unselected"
-				fi
-			fi
-		else
-			newline=$( \
-			echo -e $antisense \
-			| bedtools shuffle -noOverlapping -incl $3 -i - -g $4 \
-			| head -1 \
-			| bedtools nuc -fi $5 -bed - \
-			| tail -1 \
-			| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f\n", $8}' \
-			)
-			p=$( echo "$newline" | awk '{printf $NF}' )
-
-			# add interval if line is non empty and if the corresponding base composition is not fully represented yet in the output
-			if [[ -n "$p" ]]
-				then
-				if [[ "${distrib[${p}]}" -gt 0 ]]
-				then
-					echo -e $newline
-					tmp="$tmp\n$newline"
-					(( --r ))
-					(( --distrib[${p}] ))
-				fi
-			fi
-		fi
-	done
-
-	# reformat and sort output file before saving it
-	echo -e "$tmp" \
-	| awk '$1!=""' \
-	| sort -k1,1 -k2,2n \
-	> $6
-}
-
-export -f mrc
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel mrc_generator_single.sh -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
