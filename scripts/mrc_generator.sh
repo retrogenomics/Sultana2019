@@ -133,7 +133,7 @@ echo -e "Done"
 
 echo -ne "Calculate %GC for each adjusted intervals of the input file..."
 
-bedtools nuc -fi "${GENOME_SEQ}" -bed "${INPUT_FILE}" \
+bedtools nuc -fi "${GENOME_SEQ}" -bed "tmp.${GC_WINDOW}bp.${INPUT_FILE}" \
 | awk '$1!~/^#/{for (i=1;i<=6;i++) {printf $i "\t"}; printf "%.02f\n",$8}' \
 | sort -k1,1 -k2,2n \
 > "tmp.withGCcontent.${INPUT_FILE}"
