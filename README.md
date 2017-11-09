@@ -46,7 +46,7 @@ cd iss/scripts
 ```bash
 cd iss/datasets/l1neo
 ../../scripts/random_generator.sh \
-	-N 100 \
+	-N 1000 \
 	-n "l1neo|insilico|soni|random_loc" \
 	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
 	-g ../../annotations/hg19.genome \
@@ -55,7 +55,7 @@ cd iss/datasets/l1neo
 	-p hg19.l1neo.soni.random_loc.
 	
 ../../scripts/random_generator.sh \
-	-N 100 \
+	-N 1000 \
 	-n "l1neo|insilico|soni|random_ins" \
 	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
 	-g ../../annotations/hg19.genome \
@@ -68,7 +68,7 @@ cd iss/datasets/l1neo
 
 ```bash
 ../../scripts/mrc_generator.sh \
-	-N 2 \
+	-N 1000 \
 	-n "l1neo|insilico|soni|mrc_loc" \
 	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
 	-g ../../annotations/hg19.genome \

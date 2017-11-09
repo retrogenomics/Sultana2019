@@ -115,8 +115,6 @@ fi
 # Store all the possible %GC found in input file and their number of occurence
 #################################################################################
 
-echo -ne "Store all the possible %GC found in input file and their number of occurence..."
-
 list_percent=$( \
 awk '$1!~/^#/ {print $7}' "${INPUT_FILE}" \
 | sort -k1,1n \
@@ -124,8 +122,6 @@ awk '$1!~/^#/ {print $7}' "${INPUT_FILE}" \
 | awk -F"\n" '{printf $1" "}' \
 | sed 's/.$//' \
 )
-
-echo -e "Done"
 
 declare -A nb
 for k in ${list_percent};
@@ -136,8 +132,6 @@ done
 #################################################################################
 # Generate random insertions matching GC content of input file
 #################################################################################
-
-echo -ne "Generate random insertions matching GC content of input file..."
 
 # calculate number of lines in input file
 r=$( awk '$1!~/^#/' "${INPUT_FILE}" | wc -l )
@@ -205,7 +199,5 @@ echo -e "$tmp" \
 | awk '$1!=""' \
 | sort -k1,1 -k2,2n \
 > "${OUTPUT_FILE}"
-
-echo -e "Done"
 
 exit

@@ -170,9 +170,10 @@ echo -e "Done"
 
 
 # run parallel instances of mrc() function
+echo -e "Generate the ${BOOTSTRAP} matched random datasets:"
+
 mkdir -p ${OUTPUT_DIR}
 script_start="parallel --bar "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
-# script_start=""${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/0000.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} "
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
@@ -182,3 +183,5 @@ do
 	awk -v OFS="\t" -v l=${length} -v name=${INTERVAL_NAME} 'BEGIN{i=1} ($1!~/^#/) {printf $1 "\t" $2+l "\t" $2+l+2 "\t" name "|%04d\t1\t" $6 "\n", i; i++}' $file \
 	> "${OUTPUT_DIR}/${OUTPUT_FILE_PREFIX}${file_index}${OUTPUT_FILE_SUFFIX}.bed"
 done
+
+echo -e "------Done------"
