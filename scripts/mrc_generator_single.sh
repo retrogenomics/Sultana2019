@@ -131,14 +131,13 @@ declare -A nb
 for k in ${list_percent};
 do
 	nb[${k}]=$( awk -v k=$k '$NF==k' "${INPUT_FILE}" | wc -l )
-	echo -e "A %GC of $k was found ${nb[${k}]} times"
 done
 
 #################################################################################
 # Generate random insertions matching GC content of input file
 #################################################################################
 
-echo -ne "Generate random insertions matching GC content of input file...${INPUT_FILE}..."
+echo -ne "Generate random insertions matching GC content of input file..."
 
 # calculate number of lines in input file
 r=$( awk '$1!~/^#/' "${INPUT_FILE}" | wc -l )
@@ -207,6 +206,6 @@ echo -e "$tmp" \
 | sort -k1,1 -k2,2n \
 > "${OUTPUT_FILE}"
 
-echo -e "...Done"
+echo -e "Done"
 
 exit

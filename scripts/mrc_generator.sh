@@ -147,7 +147,7 @@ fi
 
 # to modify to allow INTERVAL_LENGTH<>2
 
-echo -ne "Extract central window of ${GC_WINDOW}bp from each intervals of the input file ..."
+echo -ne "Extract central window of ${GC_WINDOW}bp from each intervals of the input file..."
 
 length=$( echo ${GC_WINDOW} | awk -v i=${INTERVAL_LENGTH} '{print int(($1/2)+0.5)-(i/2)}' )
 bedtools slop -b $length -i "${INPUT_FILE}" -g "${GENOME}" \
@@ -171,7 +171,7 @@ echo -e "Done"
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel --bar "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 # script_start=""${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/0000.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} "
 eval ${script_start}
 
