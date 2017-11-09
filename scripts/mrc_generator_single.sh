@@ -169,7 +169,7 @@ do
 		# add interval if line is non empty and if the corresponding base composition is not fully represented yet in the output
 		if [[ -n "$p" ]]
 			then
-			if [[ "${distrib[${p}]}" -gt 0 ]]
+			if [[ "${nb[${p}]}" -gt 0 ]]
 			then
 				echo -e "selected"
 				tmp="$tmp\n$newline"
