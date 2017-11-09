@@ -22,16 +22,12 @@ GC_WINDOW=10
 
 # store usage explanations
 USAGE="\
-$script_name v$script_version:\tStarting from a .bed file, generates a random .bed file \n\
-with intervals of identical size and matching base composition in a window \n\
-surrounding the center of the input file intervals (matched random control or mrc dataset).\n\n\
+$script_name v$script_version:\tStarting from an input.bed file of experimental insertions, generates a matched random .bed file \n\
+with matching base composition in a window surrounding the center of the input file intervals.\n\
+Note: interval length should be fixed and 2bp in input.bed \n\
 usage:\t$( basename $0 ) [options] -g <genome.bed> -f <genome.fa> -i <input.bed>\n\
 options:\n\
 \t-o Output folder [default=${OUTPUT_DIR}]. \n\
-\t-p Prefix of output files (before number) [default=${OUTPUT_FILE_PREFIX}] \n\
-\t-s Prefix of output files (after number) [default=none] \n\
-\t-n Name of individual intervals (a unique number will be appended) [default=${INTERVAL_NAME}]. \n\
-\t-N Number of a random dataset to generate [default=${BOOTSTRAP}]. \n\
 \t-a A .bed file to specify the regions in the genome, which are allowed [default=none]. \n\
 \t-w Window (bp) surrounding center of input interval in which %GC is calculated [default=10]. \n\
 \t-h Print this help menu. \n\
@@ -103,11 +99,16 @@ fi
 # calculate input file interval size and verify that it is fixed
 INTERVAL_COUNT=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq | wc -l)
 if [[ "${INTERVAL_COUNT}" -gt 1 ]];
+then
+	echo -e "\nInterval length in ${INPUT_FILE} is not fixed.\n";
+	echo -e $USAGE ; exit 1
+else
+	INTERVAL_LENGTH=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq )
+	if [[ "${INTERVAL_LENGTH}" -ne 2 ]];
 	then
-		echo -e "\nInterval length in ${INPUT_FILE} is not fixed.\n";
+		echo -e "\nInterval length is not 2 bp in ${INPUT_FILE}.\n";
 		echo -e $USAGE ; exit 1
-	else
-		INTERVAL_LENGTH=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq )
+	fi
 fi
 
 #################################################################################
@@ -137,7 +138,7 @@ done
 # Generate random insertions matching GC content of input file
 #################################################################################
 
-echo -ne "Generate random insertions matching GC content of input file..."
+echo -ne "Generate random insertions matching GC content of input file...${INPUT_FILE}..."
 
 # calculate number of lines in input file
 r=$( awk '$1!~/^#/' "${INPUT_FILE}" | wc -l )
@@ -148,9 +149,8 @@ plus=$( awk '$1!~/^#/ && $6=="+"' "${INPUT_FILE}" | wc -l )
 # create arbitrary intervals of GC_WINDOW size (for sense and antisense orientations)
 sense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t+"
 antisense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t-"
-echo -e "\n ${GC_WINDOW}"
-echo -e $sense
-echo -e $antisense
+
+# pick up random insertion in allowed genomic space until the number of insertion for each %GC and each strand has been reached
 tmp=""
 while [[ "$r" -gt 0 ]] ;
 do
@@ -171,13 +171,10 @@ do
 			then
 			if [[ "${nb[${p}]}" -gt 0 ]]
 			then
-				echo -e "selected"
 				tmp="$tmp\n$newline"
 				(( --r ))
 				(( --nb[${p}] ))
 				(( --plus ))
-			else
-				echo -e "unselected"
 			fi
 		fi
 	else
@@ -196,7 +193,6 @@ do
 			then
 			if [[ "${nb[${p}]}" -gt 0 ]]
 			then
-				echo -e $newline
 				tmp="$tmp\n$newline"
 				(( --r ))
 				(( --nb[${p}] ))

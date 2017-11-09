@@ -11,6 +11,8 @@
 #################################################################################
 
 CURRENT_DIR=$( pwd )
+
+# CONFIG file should be in the same path as the executing script
 SCRIPT_PATH="`dirname \"$0\"`"
 SCRIPT_PATH="`( cd \"$SCRIPT_PATH\" && pwd )`"
 
@@ -18,7 +20,7 @@ SCRIPT_PATH="`( cd \"$SCRIPT_PATH\" && pwd )`"
 configuration_file="${SCRIPT_PATH}/CONFIG"
 if [[ ! -e "$configuration_file" ]];
 	then
-		echo -e "\nMissing configuration file in ${CURRENT_DIR}.\n";
+		echo -e "\nMissing configuration file in ${SCRIPT_PATH}.\n";
 		exit 1
 fi
 
@@ -32,8 +34,8 @@ done < "${configuration_file}"
 # Set global parameters, variables and folders
 #################################################################################
 
-script_name="random_generator"
-script_version='1.0'
+script_name="mrc_generator"
+script_version='2.0'
 
 GENOME=""
 GENOME_SEQ=""
@@ -48,9 +50,9 @@ GC_WINDOW=10
 
 # store usage explanations
 USAGE="\
-$script_name v$script_version:\tStarting from a .bed file, generates a random .bed file \n\
-with intervals of identical size and matching base composition in a window \n\
-surrounding the center of the input file intervals (matched random control or mrc dataset).\n\n\
+$script_name v$script_version:\tStarting from an input.bed file of experimental insertions, generates a matched random .bed file \n\
+with matching base composition in a window surrounding the center of the input file intervals.\n\
+Note: interval length should be fixed and 2bp in input.bed \n\
 usage:\t$( basename $0 ) [options] -g <genome.bed> -f <genome.fa> -i <input.bed>\n\
 options:\n\
 \t-o Output folder [default=${OUTPUT_DIR}]. \n\
@@ -127,11 +129,16 @@ fi
 # calculate input file interval size and verify that it is fixed
 INTERVAL_COUNT=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq | wc -l)
 if [[ "${INTERVAL_COUNT}" -gt 1 ]];
+then
+	echo -e "\nInterval length in ${INPUT_FILE} is not fixed.\n";
+	echo -e $USAGE ; exit 1
+else
+	INTERVAL_LENGTH=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq )
+	if [[ "${INTERVAL_LENGTH}" -ne 2 ]];
 	then
-		echo -e "\nInterval length in ${INPUT_FILE} is not fixed.\n";
+		echo -e "\nInterval length is not 2 bp in ${INPUT_FILE}.\n";
 		echo -e $USAGE ; exit 1
-	else
-		INTERVAL_LENGTH=$( awk '$1!~/^#/ {print $3-$2}' "${INPUT_FILE}" | sort -k1,1n | uniq )
+	fi
 fi
 
 #################################################################################
@@ -164,8 +171,8 @@ echo -e "Done"
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-# script_start="parallel "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
-script_start=""${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/0000.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} "
+script_start="parallel "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+# script_start=""${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/0000.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} "
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
