@@ -53,7 +53,9 @@ cd iss/datasets/l1neo
 	-i hg19.l1neo.soni.loc.helas3.bed \
 	-o random_loc \
 	-p hg19.l1neo.soni.random_loc.
-	
+```
+
+```bash	
 ../../scripts/random_generator.sh \
 	-N 1000 \
 	-n "l1neo|insilico|soni|random_ins" \
@@ -78,3 +80,14 @@ cd iss/datasets/l1neo
 	-p hg19.l1neo.soni.mrc_loc.
 ```
 
+```bash
+../../scripts/mrc_generator.sh \
+	-N 1000 \
+	-n "l1neo|insilico|soni|mrc_ins" \
+	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
+	-g ../../annotations/hg19.genome \
+	-f ~/references/human/hg19.fa \
+	-i hg19.l1neo.soni.ins.helas3.bed \
+	-o mrc_loc \
+	-p hg19.l1neo.soni.mrc_ins.
+```
