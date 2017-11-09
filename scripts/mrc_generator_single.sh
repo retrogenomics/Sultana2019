@@ -148,6 +148,7 @@ plus=$( awk '$1!~/^#/ && $6=="+"' "${INPUT_FILE}" | wc -l )
 # create arbitrary intervals of GC_WINDOW size (for sense and antisense orientations)
 sense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t+"
 antisense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t-"
+echo -e "\n ${GC_WINDOW}"
 echo -e $sense
 echo -e $antisense
 tmp=""
