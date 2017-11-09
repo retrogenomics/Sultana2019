@@ -211,6 +211,7 @@ mrc() {
 				then
 				if [[ "${distrib[${p}]}" -gt 0 ]]
 				then
+					echo -e $newline
 					tmp="$tmp\n$newline"
 					(( --r ))
 					(( --distrib[${p}] ))
@@ -233,6 +234,7 @@ mrc() {
 				then
 				if [[ "${distrib[${p}]}" -gt 0 ]]
 				then
+					echo -e $newline
 					tmp="$tmp\n$newline"
 					(( --r ))
 					(( --distrib[${p}] ))
