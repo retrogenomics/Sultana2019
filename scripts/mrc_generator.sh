@@ -10,8 +10,12 @@
 # Load default folders for project, picard tools, reference genome, etc
 #################################################################################
 
+CURRENT_DIR=$( pwd )
+SCRIPT_PATH="`dirname \"$0\"`"
+SCRIPT_PATH="`( cd \"$SCRIPT_PATH\" && pwd )`"
+
 # test if CONFIG file exists
-configuration_file="${CURRENT_DIR}/CONFIG"
+configuration_file="${SCRIPT_PATH}/CONFIG"
 if [[ ! -e "$configuration_file" ]];
 	then
 		echo -e "\nMissing configuration file in ${CURRENT_DIR}.\n";
@@ -31,7 +35,6 @@ done < "${configuration_file}"
 script_name="random_generator"
 script_version='1.0'
 
-CURRENT_DIR=$( pwd )
 GENOME=""
 GENOME_SEQ=""
 ALLOWED=""
