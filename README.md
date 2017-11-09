@@ -67,7 +67,7 @@ cd iss/datasets/l1neo
 2. Matched random control (mrc) datasets
 
 ```bash
-../../scripts/mrc_generator.sh
+../../scripts/mrc_generator.sh \
 	-N 10 \
 	-n "l1neo|insilico|soni|mrc_loc" \
 	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
