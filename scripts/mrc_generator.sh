@@ -7,6 +7,24 @@
 #################################################################################
 
 #################################################################################
+# Load default folders for project, picard tools, reference genome, etc
+#################################################################################
+
+# test if CONFIG file exists
+configuration_file="${CURRENT_DIR}/CONFIG"
+if [[ ! -e "$configuration_file" ]];
+	then
+		echo -e "\nMissing configuration file in ${CURRENT_DIR}.\n";
+		exit 1
+fi
+
+# read CONFIG file
+while read line
+do
+    eval $( awk '$1!~/^#/ {print $0}' )
+done < "${configuration_file}"
+
+#################################################################################
 # Set global parameters, variables and folders
 #################################################################################
 
@@ -143,7 +161,7 @@ echo -e "Done"
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel mrc_generator_single.sh -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
