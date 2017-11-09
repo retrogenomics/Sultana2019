@@ -17,7 +17,7 @@ REF_GENOME_DIR="${ROOT}/references/human"
 REF_GENOME="hg19"
 
 # installation folder of iss
-ISS_FOLDER="${ROOT}/tmp3/iss"
+ISS_FOLDER="${ROOT}/tmp5/iss"
 
 # iss default folders (in principle, does not need to be changed)
 ANNOTATIONS="${ISS_FOLDER}/annotations"
