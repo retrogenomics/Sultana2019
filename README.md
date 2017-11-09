@@ -20,6 +20,7 @@ Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
 - and its bwa index (ex: `hg19.fa.amb, .ann, .bwt, .fai, .pac, .sa`)
 
 ### Procedure
+
 1. Download from GitHub:
 ```
 git clone https://github.com/retrogenomics/iss.git
@@ -38,6 +39,9 @@ cd iss/scripts
 ```
 
 ### To generate control L1 files
+
+1. Random datasets
+
 ```bash
 cd iss/datasets/l1neo
 ../../scripts/random_generator.sh \
@@ -57,5 +61,19 @@ cd iss/datasets/l1neo
 	-i hg19.l1neo.soni.ins.helas3.bed \
 	-o random_ins \
 	-p hg19.l1neo.soni.random_ins.
+```
+
+2. Matched random control (mrc) datasets
+
+```bash
+../../scripts/mrc_generator.sh
+	-N 10 \
+	-n "l1neo|insilico|soni|mrc_loc" \
+	-a ../../annotations/hg19.helaAllowedGenomeSpace.bed \
+	-g ../../annotations/hg19.genome \
+	-f ~/references/human/hg19.fa \
+	-i hg19.l1neo.soni.loc.helas3.bed \
+	-o mrc_loc \
+	-p hg19.l1neo.soni.mrc_loc.
 ```
 
