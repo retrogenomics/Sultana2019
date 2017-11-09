@@ -121,8 +121,8 @@ fi
 
 echo -ne "Extract central window of ${GC_WINDOW}bp from each intervals of the input file ..."
 
-length=$( echo ${GC_WINDOW} | awk '{print int(($1/2)+0.5)-1}' )
-bedtools slop -b ${INTERVAL_LENGTH} -i "${INPUT_FILE}" -g "${GENOME}" \
+length=$( echo ${GC_WINDOW} | awk -v i=${INTERVAL_LENGTH} '{print int(($1/2)+0.5)-(i/2)}' )
+bedtools slop -b $length -i "${INPUT_FILE}" -g "${GENOME}" \
 > "tmp.${GC_WINDOW}bp.${INPUT_FILE}"
 
 echo -e "Done"
@@ -158,6 +158,7 @@ declare -A nb
 for k in ${list_percent};
 do
 	nb[${k}]=$( awk -v k=$k '$NF==k' "tmp.withGCcontent.${INPUT_FILE}" | wc -l )
+	echo -e "%GC of $k is found ${nb[${k}]}."
 done
 
 echo -e "Done"
@@ -211,11 +212,13 @@ mrc() {
 				then
 				if [[ "${distrib[${p}]}" -gt 0 ]]
 				then
-					echo -e $newline
+					echo -e "selected"
 					tmp="$tmp\n$newline"
 					(( --r ))
 					(( --distrib[${p}] ))
 					(( --plus ))
+				else
+					echo -e "unselected"
 				fi
 			fi
 		else
