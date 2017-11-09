@@ -13,6 +13,7 @@ Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
 - [Picard tools](http://broadinstitute.github.io/picard/) (tested version: 1.136)
 - [bedtools](https://github.com/arq5x/bedtools2) (tested version: 2.25.0)
 - [seqtk](https://github.com/lh3/seqtk) (tested version: 1.0; note that seqtk is only required if subsampling of sequencing data is used - to reduce time of analysis in tests)
+- [GNU parallel](https://www.gnu.org/software/parallel/) (tested version: 20150522)
 - GNU grep/awk
 
 ### Other requirements
