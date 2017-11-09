@@ -50,7 +50,7 @@ while getopts 'hvg:f:a:i:o:w:' opt ; do
 		a) ALLOWED=$OPTARG ;;
 		i) INPUT_FILE=$OPTARG ;;
 		o) OUTPUT_FILE=$OPTARG ;;
-		w) GC_WINDOW=OPTARG ;;
+		w) GC_WINDOW=$OPTARG ;;
 		h) echo -e "\n$USAGE"; exit 1 ;;
 		v) echo -e "${script_name} v${script_version}" ; exit 1 ;;
 		\?) echo -e "\nInvalid option: -$OPTARG\n" >&2; echo -e $USAGE; exit 1 ;;
