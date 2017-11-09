@@ -172,6 +172,7 @@ echo -e "Done"
 # argument $4 is ${GENOME}
 # argument $5 is ${GENOME_SEQ}
 # argument $6 is output file name
+# argument $7 is ${GC_WINDOW}
 
 mrc() {
 
@@ -184,27 +185,59 @@ mrc() {
 	# calculate number of lines in input file
 	r=$( awk '$1!~/^#/' $2 | wc -l )
 
+	# calculate number of sense strand in input file
+	plus=$( awk '$1!~/^#/ && $6=="+"' $2 | wc -l )
+
+	# create arbitrary intervals of GC_WINDOW size (for sense and antisense orientations)
+	sense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t+"
+	antisense="chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t-"
+
 	tmp=""
 	while [[ "$r" -gt 0 ]] ;
 	do
-		newline=$( \
-		bedtools shuffle -noOverlapping -incl $3 -i $2 -g $4 \
-		| head -1 \
-		| bedtools nuc -fi $5 -bed - \
-		| tail -1 \
-		| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f\n", $8}' \
-		)
+		if [[ "$plus" -gt 0 ]] ;
+		then
+			newline=$( \
+			echo -e $sense \
+			| bedtools shuffle -noOverlapping -incl $3 -i - -g $4 \
+			| head -1 \
+			| bedtools nuc -fi $5 -bed - \
+			| tail -1 \
+			| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f\n", $8}' \
+			)
+			p=$( echo "$newline" | awk '{printf $NF}' )
 
-		p=$( echo "$newline" | awk '{printf $NF}' )
+			# add interval if line is non empty and if the corresponding base composition is not fully represented yet in the output
+			if [[ -n "$p" ]]
+				then
+				if [[ "${distrib[${p}]}" -gt 0 ]]
+				then
+					tmp="$tmp\n$newline"
+					(( --r ))
+					(( --distrib[${p}] ))
+					(( --plus ))
+				fi
+			fi
+		else
+			newline=$( \
+			echo -e $antisense \
+			| bedtools shuffle -noOverlapping -incl $3 -i - -g $4 \
+			| head -1 \
+			| bedtools nuc -fi $5 -bed - \
+			| tail -1 \
+			| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f\n", $8}' \
+			)
+			p=$( echo "$newline" | awk '{printf $NF}' )
 
-		# add interval if line is non empty and if the corresponding base composition is not fully represented yet in the output
-		if [[ -n "$p" ]]
-			then
-			if [[ "${distrib[${p}]}" -gt 0 ]]
-			then
-				tmp="$tmp\n$newline"
-				(( --r ))
-				(( --distrib[${p}] ))
+			# add interval if line is non empty and if the corresponding base composition is not fully represented yet in the output
+			if [[ -n "$p" ]]
+				then
+				if [[ "${distrib[${p}]}" -gt 0 ]]
+				then
+					tmp="$tmp\n$newline"
+					(( --r ))
+					(( --distrib[${p}] ))
+				fi
 			fi
 		fi
 	done
@@ -221,7 +254,7 @@ export -f mrc
 
 # run parallel instances of mrc() function
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel mrc nb[@] "tmp.withGCcontent.${INPUT_FILE}" ${ALLOWED} ${GENOME_SEQ} "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" ${GC_WINDOW}::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
