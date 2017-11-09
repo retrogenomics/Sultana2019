@@ -41,10 +41,13 @@ cd iss/scripts
 
 ### To generate control L1 files
 
+Go to the `(...)/iss/datasets/l1neo` directory and run the following commands for target loci (loc, non-redundant) and insertions (ins, can be redundant if several L1 insert at the same nucleotidic position).
+
+Note that control datasets are generated using the same filters as the experimental dataset, i.e. using the `hg19.helaAllowedGenomeSpace.bed` file to keep only insertions which are in chr1-22 and chrX, and to exclude blacklisted regions (ENCODE, Duke).
+
 1. Random datasets
 
 ```bash
-cd iss/datasets/l1neo
 ../../scripts/random_generator.sh \
 	-N 1000 \
 	-n "l1neo|insilico|soni|random_loc" \
