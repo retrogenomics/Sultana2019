@@ -184,4 +184,8 @@ do
 	> "${OUTPUT_DIR}/${OUTPUT_FILE_PREFIX}${file_index}${OUTPUT_FILE_SUFFIX}.bed"
 done
 
+# cleanup temporary files
+rm "tmp.withGCcontent.${INPUT_FILE}"
+rm "tmp.${GC_WINDOW}bp.${INPUT_FILE}"
+
 echo -e "------Done------"
