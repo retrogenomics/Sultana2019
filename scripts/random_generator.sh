@@ -98,7 +98,7 @@ echo -ne "Generate random dataset"
 
 # randomly pick intervals
 mkdir -p ${OUTPUT_DIR}
-step=$(( ${BOOTSTRAP} / 10 ))
+step=$(( ( ${BOOTSTRAP} / 10 ) + 1 ))
 
 for i in $( seq 1 ${BOOTSTRAP});
 do
@@ -114,7 +114,7 @@ do
 	eval ${COMMAND}
 
 	# print progression
-	if (( $i % step == 0 ))
+	if (( $i % ${step} == 0 )) ;
 	then
 		echo -ne "."
 	fi
