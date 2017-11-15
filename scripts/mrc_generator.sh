@@ -170,18 +170,19 @@ echo -e "Done"
 
 
 # run parallel instances of mrc() function
-echo -e "Generate the ${BOOTSTRAP} matched random datasets:"
+echo -e "Generate ${BOOTSTRAP} matched random datasets:"
 
 mkdir -p ${OUTPUT_DIR}
-script_start="parallel --bar "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
+script_start="parallel --bar "${SCRIPTS}/mrc_generator_single.sh" -i "tmp.withGCcontent.${INPUT_FILE}" -a ${ALLOWED} -g ${GENOME} -f ${GENOME_SEQ} -o "${OUTPUT_DIR}/{}.tmp.${GC_WINDOW}bp.${INPUT_FILE}" -w ${GC_WINDOW} ::: $( printf "{%04d..%04d}" 1 ${BOOTSTRAP} )"
 eval ${script_start}
 
 # modify coordinates of mrc to span only 2nt-intervals
-for file in ${OUTPUT_DIR}/*.tmp.${GC_WINDOW}.${INPUT_FILE};
+for file in ${OUTPUT_DIR}/*.tmp.${GC_WINDOW}bp.${INPUT_FILE};
 do
-	file_index=$(basename "${file}" .tmp.${GC_WINDOW}.${INPUT_FILE})
-	awk -v OFS="\t" -v l=${length} -v name=${INTERVAL_NAME} 'BEGIN{i=1} ($1!~/^#/) {printf $1 "\t" $2+l "\t" $2+l+2 "\t" name "|%04d\t1\t" $6 "\n", i; i++}' $file \
+	file_index=$(basename "${file}" .tmp.${GC_WINDOW}bp.${INPUT_FILE})
+	awk -v OFS="\t" -v l=${length} -v name=${INTERVAL_NAME} 'BEGIN{i=1} ($1!~/^#/) {printf $1 "\t" $2+l "\t" $2+l+2 "\t" name "|%04d\t1\t" $6 "\n", i; i++}' "${file}" \
 	> "${OUTPUT_DIR}/${OUTPUT_FILE_PREFIX}${file_index}${OUTPUT_FILE_SUFFIX}.bed"
+	rm "${file}"
 done
 
 # cleanup temporary files

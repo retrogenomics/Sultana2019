@@ -140,8 +140,8 @@ r=$( awk '$1!~/^#/' "${INPUT_FILE}" | wc -l )
 plus=$( awk '$1!~/^#/ && $6=="+"' "${INPUT_FILE}" | wc -l )
 
 # create arbitrary intervals of GC_WINDOW size (for sense and antisense orientations)
-echo -e "chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t+" > "tmp.sense.${OUTPUT_FILE}"
-echo -e "chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t-" > "tmp.antisense.${OUTPUT_FILE}"
+echo -e "chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t+" > "${OUTPUT_FILE}.sense.tmp"
+echo -e "chr1\t10\t$(( 10 + ${GC_WINDOW} ))\t.\t1\t-" > "${OUTPUT_FILE}.antisense.tmp"
 
 # pick up random insertion in allowed genomic space until the number of insertion for each %GC and each strand has been reached
 tmp=""
@@ -150,12 +150,12 @@ do
 	if [[ "$plus" -gt 0 ]] ;
 	then
 		newline=$( \
-		echo -e ${tmp} \
-		| bedtools shuffle -noOverlapping -incl ${ALLOWED} -excl - -i "tmp.sense.${OUTPUT_FILE}" -g ${GENOME} \
+		echo -e "${tmp}" \
+		| bedtools shuffle -noOverlapping -incl ${ALLOWED} -excl - -i "${OUTPUT_FILE}.sense.tmp" -g ${GENOME} \
 		| head -1 \
 		| bedtools nuc -fi ${GENOME_SEQ} -bed - \
 		| tail -1 \
-		| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f\n", $8}' \
+		| awk '($1!~/^#/ && $13==0) {printf $1 "\t" $2 "\t" $3 "\t" "." "\t" 1 "\t" $6 "\t" "%.02f", $8}' \
 		)
 		p=$( echo "$newline" | awk '{printf $NF}' )
 
@@ -172,8 +172,8 @@ do
 		fi
 	else
 		newline=$( \
-		echo -e ${tmp} \
-		| bedtools shuffle -noOverlapping -incl ${ALLOWED} -excl - -i "tmp.antisense.${OUTPUT_FILE}" -g ${GENOME} \
+		echo -e "${tmp}" \
+		| bedtools shuffle -noOverlapping -incl ${ALLOWED} -excl - -i "${OUTPUT_FILE}.antisense.tmp" -g ${GENOME} \
 		| head -1 \
 		| bedtools nuc -fi ${GENOME_SEQ} -bed - \
 		| tail -1 \
@@ -201,7 +201,7 @@ echo -e "$tmp" \
 > "${OUTPUT_FILE}"
 
 # delete temporary files
-rm "tmp.sense.${OUTPUT_FILE}"
-rm "tmp.antisense.${OUTPUT_FILE}"
+rm "${OUTPUT_FILE}.sense.tmp"
+rm "${OUTPUT_FILE}.antisense.tmp"
 
 exit
