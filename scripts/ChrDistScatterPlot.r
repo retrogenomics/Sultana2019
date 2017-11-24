@@ -4,7 +4,6 @@
 # Plot correlation between number of insertions per chr and wgs coverage of each chr #
 ######################################################################################
 
-setwd("$HOME/projects/iss/analysis")
 library("ggpubr")
 
 # import dataframe from ChrDistTableMaker.sh output file
@@ -41,8 +40,8 @@ mydata$name <- row.names(mydata)
 
 # generate scatterplot
 pdf.options(
-  width = 2,
-  height = 2,
+  width = 2.5,
+  height = 2.5,
   family = "Helvetica",
   useDingbats = FALSE
 )

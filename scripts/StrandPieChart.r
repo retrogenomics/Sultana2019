@@ -4,7 +4,6 @@
 # Plot correlation between number of insertions per chr and wgs coverage of each chr #
 ######################################################################################
 
-setwd("$HOME/projects/iss/analysis")
 library("ggpubr")
 
 # import dataframe from .bed file
