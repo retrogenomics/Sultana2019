@@ -15,6 +15,11 @@ Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
 - [seqtk](https://github.com/lh3/seqtk) (tested version: 1.0; note that seqtk is only required if subsampling of sequencing data is used - to reduce time of analysis in tests)
 - [GNU parallel](https://www.gnu.org/software/parallel/) (tested version: 20150522)
 - GNU grep/awk
+- [R](https://www.r-project.org) (tested version: 3.4.2)
+- R packages:
+	- [ggpubr](https://cran.r-project.org/web/packages/ggpubr/index.html)
+	- [scales](https://cran.r-project.org/web/packages/scales/index.html)
+	- [reshape2](https://cran.r-project.org/web/packages/reshape2/)
 
 ### Other requirements
 - A human reference genome sequence (ex:`hg19.fa`), 
