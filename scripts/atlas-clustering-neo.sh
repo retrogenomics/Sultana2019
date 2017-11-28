@@ -14,7 +14,7 @@ cmd_line="$_ ${@}" # save the options used for the log file
 script_name="atlas-clustering-neo"
 script_version="3.3"
 
-start_time=`date +%s`
+start_time=$( date +%s )
 day=$(date +"[%d-%m-%Y] [%T]")
 
 LC_NUMERIC_OLD=$LC_NUMERIC
@@ -38,7 +38,7 @@ if [[ ! -e "$configuration_file" ]];
 fi
 
 # read CONFIG file
-while read line
+while read
 do
     eval $( awk '$1!~/^#/ {print $0}' )
 done < "${configuration_file}"
@@ -58,13 +58,13 @@ results_dir=""
 # store usage explanations
 USAGE="\
 $script_name v${script_version}:\tanalysis of ATLAS-seq runs for ectopic L1 retrotransposition. \n\n\
-usage:\t$( basename $0 ) [options] -b barcode_file.txt input_file.fastq \n\
+usage:\t$( basename "$0" ) [options] -b barcode_file.txt input_file.fastq \n\
 options:\n\
 \t-h Print this help menu. \n\
 \t-v What version of $script_name are you using? \n\
 \t-d Maximum distance between insertions to be merged [default=$distance] \n\
 \t-s Subsampling of input fastq file (no=1; or indicate fraction of reads to consider, e.g. 0.01) [default=$sampling] \n\
-\t-t Number of threads used for mapping [default=$threads]\n\
+\t-t Number of threads used for mapping [default=$threads] \n\
 \t-o output directory [default=subdir created in current directory]\n\
 \t-f To indicate a 5' ATLAS-seq experiment [not yet implemented] \n\
 "
@@ -80,7 +80,7 @@ while getopts 'hvb:d:t:s:o:f' opt ; do
 		o) results_dir=$( readlink -f "$OPTARG" ) ; mkdir -p "${results_dir}" ;;
 		h) echo -e "\n$USAGE"; exit 1 ;;
 		v) echo -e "${script_name} v${script_version}" ; exit 1 ;;
-		\?) echo -e "\nInvalid option: -$OPTARG\n" >&2; echo -e $USAGE; exit 1 ;;
+		\?) echo -e "\nInvalid option: -$OPTARG\n" >&2; echo -e "$USAGE"; exit 1 ;;
 	esac
 done
 
@@ -92,13 +92,13 @@ input_file="$1"
 if [[ -z "${input_file}" || ! -f "${input_file}" ]];
 then
 	echo -e "\nInput file not specified or not existing.\n";
-	echo -e $USAGE ; exit 1
+	echo -e "$USAGE" ; exit 1
 fi
 
 if [[ -z "${barcode_file}" || ! -f "${barcode_file}" ]];
 then
 	echo -e "\nBarcode file not specified or not existing.\n";
-	echo -e $USAGE ; exit 1
+	echo -e "$USAGE" ; exit 1
 fi
 
 # test if 5' or 3' ATLAS-seq experiment
@@ -117,7 +117,7 @@ data_dir=$( cd "$( dirname "${input_file}" )"; pwd )
 data_name=$( basename "${input_file}" )
 barcode_dir=$( cd "$( dirname "${barcode_file}" )"; pwd )
 barcode=$( basename "${barcode_file}" )
-nb_barcodes=$( grep -v -e '^#' "${barcode_dir}/$barcode" | wc -l )
+nb_barcodes=$( grep -vc -e '^#' "${barcode_dir}/$barcode" )
 
 # obtain the name and sequence of barcodes and store them in bash tables
 i=1
@@ -126,10 +126,10 @@ grep -v -e '^#' "${barcode_dir}/$barcode" \
 
 while read aLine ;
 do
-	barcode_name[$i]=$( echo $aLine | awk '{print $1}' )
-	barcode_seq[$i]=$( echo $aLine | awk '{print $2}' )
-	sample_name[$i]=$( echo $aLine | awk '{print $3}' )
-	i=$(($i+1))
+	barcode_name[$i]=$( echo "$aLine" | awk '{print $1}' )
+	barcode_seq[$i]=$( echo "$aLine" | awk '{print $2}' )
+	sample_name[$i]=$( echo "$aLine" | awk '{print $3}' )
+	i=$(( i + 1 ))
 done < barcode_cleaned.txt
 rm barcode_cleaned.txt
 
@@ -137,7 +137,7 @@ rm barcode_cleaned.txt
 if [[ -z "${results_dir}" || ! -d "${results_dir}" ]];
 then
 	results_dir="${CURRENT_DIR}/$( date +"%y%m%d_%H%M%S_" )${exp_name}atlas"
-	for i in `seq 1 $nb_barcodes`
+	for i in $(seq 1 "${nb_barcodes}")
 	do
 		results_dir="${results_dir}_${sample_name[$i]}"
 	done
@@ -161,7 +161,7 @@ Barcodes:\t\t${barcode_dir}/${barcode} \n\
 Output directory:\t${results_dir} \n\
 Samples: \n"
 
-for i in $( seq 1 ${nb_barcodes} )
+for i in $( seq 1 "${nb_barcodes}" )
 do
 	echo -e "\t- ${barcode_name[$i]}: ${sample_name[$i]}"
 done
@@ -182,7 +182,7 @@ Barcodes:\t\t${barcode_dir}/${barcode} \n\
 # Sequencing data subsampling if requested by user
 #################################################################################
 
-printf "[Step $step - Data loading]\n"
+printf "[Step %s - Data loading]\n" "${step}"
 if [ $( echo "$sampling<1" | bc -l ) -eq 1 ];
 then
 	input="${data_dir}/${data_name}"
@@ -197,17 +197,17 @@ fi
 #################################################################################
 
 cd "${results_dir}/tmp"
-printf "[Step $step - Demultiplexing]\n"
+printf "[Step %s - Demultiplexing]\n" "${step}"
 
 # create cutadapt adapter line
 adapt=""
-for i in `seq 1 $nb_barcodes`
+for i in $( seq 1 "${nb_barcodes}" )
 do
 	adapt+=" -g ${barcode_name[$i]}=^${barcode_seq[$i]} "
 done
 
 # split fastq file according to barcode sequence (and remove barcode) with cutadapt
-cutadapt -e 0.10 -q 10 $adapt \
+cutadapt -e 0.10 -q 10 "${adapt}" \
 	--untrimmed-output=discarded_missing_bc.fastq \
 	-o {name}.01.trimmed_bc.fastq \
 	"${data_dir}/${data_name}" \
@@ -224,7 +224,7 @@ Total processed reads:\t${total_reads} \n\
   - no barcode found:\t${discarded_missing_bc}/${total_reads} \n\
 "
 
-for i in `seq 1 $nb_barcodes`
+for i in $( seq 1 "${nb_barcodes}" )
 do
 	if [[ -s "${barcode_name[$i]}.01.trimmed_bc.fastq" ]];
 	then
@@ -249,10 +249,10 @@ then
 	# 5' ATLAS-seq (not yet implemented)
 	#################################################################################
 
-	for i in $( seq 1 $nb_barcodes );
+	for i in $( seq 1 "${nb_barcodes}" )
 	do
 		cd "${results_dir}/tmp"
-		printf "[Step $step - Processing sample ${sample_name[$i]}]\n"
+		printf "[Step %s - Processing sample ${sample_name[$i]}]\n" "${step}"
 		# not (yet) implemented
 		printf "Done \n"
 		(( step++ ))
@@ -263,10 +263,10 @@ else
 	# 3' ATLAS-seq
 	#################################################################################
 
-	for i in $( seq 1 $nb_barcodes );
+	for i in $( seq 1 "${nb_barcodes}" )
 	do
 		cd "${results_dir}/tmp"
-		printf "[Step $step - Processing sample ${sample_name[$i]}]\n"
+		printf "[Step %s - Processing sample ${sample_name[$i]}]\n" "${step}"
 
 		#################################################################################
 		# Trim ATLAS-seq linker at 5' end of reads (sequencing is outside to inside L1)
@@ -294,7 +294,7 @@ else
 		# Map trimmed ATLAS-seq reads
 		#################################################################################
 
-		printf "  - Map reads on ${REF_GENOME}..."
+		printf "  - Map reads on %s..." "${REF_GENOME}"
 
 		# map reads with bwa-mem and select only those which are softclipped at their 3' end and which contain a stretch of A/T
 		# immediately at the beginning of the clipped region
@@ -303,7 +303,7 @@ else
 		#			-v = verbosity mode
 		#			-C = append FASTA/FASTQ comment to output
 
-		bwa mem -t $threads -C -M -v 1 "${REF_GENOME_DIR}/${REF_GENOME}.fa" "${barcode_name[$i]}.02a.trimmed_linker.fastq" \
+		bwa mem -t "${threads}" -C -M -v 1 "${REF_GENOME_DIR}/${REF_GENOME}.fa" "${barcode_name[$i]}.02a.trimmed_linker.fastq" \
 		2>/dev/null \
 		| awk '($1~/^@/) || ($2==16 && $6~/^[0-9]+S/) || ($2==0 && $6~/[0-9]+S$/)' \
 		| awk '	$1 ~ /^@/ {
@@ -406,20 +406,20 @@ else
 
 		if [[ -s "${barcode_name[$i]}.09a.triminfo.aligned.noduplicate.sorted.bed" ]];
 		then
-			bedtools merge -i "${barcode_name[$i]}.09a.triminfo.aligned.noduplicate.sorted.bed" -s -d $distance -c 2,6,2 -o count,distinct,collapse \
-			| awk '$0!~/^#/ {\
+			bedtools merge -i "${barcode_name[$i]}.09a.triminfo.aligned.noduplicate.sorted.bed" -s -d "${distance}" -c 2,6,2 -o count,distinct,collapse \
+			| awk '$0!~/^#/ {
 				 printf $1 "\t" $2 "\t" $3 "\t" ;
 				 printf "3ATLAS\t" ;
 				 printf $5 "\t" $4 "\t" $7 "\n" ;
 			}' \
-			| awk '{\
+			| awk '{
 				max=split($7,a,",") ;
 				for (i in a) {freq[a[i]]++} ;
 				printf $1 "\t" $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" ;
 				for (i=1; i<max; i++) {printf freq[a[i]] "|" a[i] ","} ;
 				printf freq[a[max]] "|" a[max] "\n" ;
 			}' \
-			| awk -v sample=${sample_name[$i]} 'BEGIN{k=1}{\
+			| awk -v sample="${sample_name[$i]}" 'BEGIN{k=1}{
 				n=split($7,a,",") ;
 				max=0 ;
 				best_coord=0;
@@ -457,7 +457,7 @@ else
 		#################################################################################
 
 		# calculate and store the count of clusters
-		insertion_count[$i]=$( grep -c -v -e "^#" ${barcode_name[$i]}.11.numbered_insertions.bed )
+		insertion_count[$i]=$( grep -c -v -e "^#" "${barcode_name[$i]}.11.numbered_insertions.bed" )
 
 		# generate a minimal bed file for visualization purpose
 		echo -e "#CHR\tINS_START\tINS_END\tINS_ID\tNB_NRR\tINS_STRAND" \
@@ -515,23 +515,23 @@ else
 
 		printf "  - Extract target site flanking sequence..."
 
-		bedtools slop -b 10 -i "${barcode_name[$i]}.12.insertions.display.bed" -g ${REF_GENOME_DIR}/${REF_GENOME}.genome \
-		| bedtools getfasta -s -name -fi ${REF_GENOME_DIR}/${REF_GENOME}.fa -bed - -fo "${barcode_name[$i]}.13.target.site.2x10.fa"
+		bedtools slop -b 10 -i "${barcode_name[$i]}.12.insertions.display.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+		| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "${barcode_name[$i]}.13.target.site.2x10.fa"
 
-		bedtools slop -b 25 -i "${barcode_name[$i]}.12.insertions.display.bed" -g ${REF_GENOME_DIR}/${REF_GENOME}.genome \
-		| bedtools getfasta -s -name -fi ${REF_GENOME_DIR}/${REF_GENOME}.fa -bed - -fo "${barcode_name[$i]}.13.target.site.2x25.fa"
+		bedtools slop -b 25 -i "${barcode_name[$i]}.12.insertions.display.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+		| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "${barcode_name[$i]}.13.target.site.2x25.fa"
 
-		bedtools slop -b 50 -i "${barcode_name[$i]}.12.insertions.display.bed" -g ${REF_GENOME_DIR}/${REF_GENOME}.genome \
-		| bedtools getfasta -s -name -fi ${REF_GENOME_DIR}/${REF_GENOME}.fa -bed - -fo "${barcode_name[$i]}.13.target.site.2x50.fa"
+		bedtools slop -b 50 -i "${barcode_name[$i]}.12.insertions.display.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+		| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "${barcode_name[$i]}.13.target.site.2x50.fa"
 
-		bedtools slop -b 100 -i "${barcode_name[$i]}.12.insertions.display.bed" -g ${REF_GENOME_DIR}/${REF_GENOME}.genome \
-		| bedtools getfasta -s -name -fi ${REF_GENOME_DIR}/${REF_GENOME}.fa -bed - -fo "${barcode_name[$i]}.13.target.site.2x100.fa"
+		bedtools slop -b 100 -i "${barcode_name[$i]}.12.insertions.display.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+		| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "${barcode_name[$i]}.13.target.site.2x100.fa"
 
-		bedtools slop -b 250 -i "${barcode_name[$i]}.12.insertions.display.bed" -g ${REF_GENOME_DIR}/${REF_GENOME}.genome \
-		| bedtools getfasta -s -name -fi ${REF_GENOME_DIR}/${REF_GENOME}.fa -bed - -fo "${barcode_name[$i]}.13.target.site.2x250.fa"
+		bedtools slop -b 250 -i "${barcode_name[$i]}.12.insertions.display.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+		| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "${barcode_name[$i]}.13.target.site.2x250.fa"
 
-		bedtools slop -b 1000 -i "${barcode_name[$i]}.12.insertions.display.bed" -g ${REF_GENOME_DIR}/${REF_GENOME}.genome \
-		| bedtools getfasta -s -name -fi ${REF_GENOME_DIR}/${REF_GENOME}.fa -bed - -fo "${barcode_name[$i]}.13.target.site.2x1000.fa"
+		bedtools slop -b 1000 -i "${barcode_name[$i]}.12.insertions.display.bed" -g "${REF_GENOME_DIR}/${REF_GENOME}.genome" \
+		| bedtools getfasta -s -name -fi "${REF_GENOME_DIR}/${REF_GENOME}.fa" -bed - -fo "${barcode_name[$i]}.13.target.site.2x1000.fa"
 
 		printf "Done \n"
 
@@ -568,7 +568,7 @@ fi
 
 # display log files
 cd "${results_dir}"
-for i in $( seq 1 $nb_barcodes );
+for i in $( seq 1 "${nb_barcodes}" );
 do
 	output_stat+="\
 $( cat "${sample_name[$i]}.${exp_name}atlas.log" ) \n\
@@ -577,7 +577,7 @@ $starline \n\
 done
 
 # calculate runtime for the whole pipeline
-end_time=`date +%s`
+end_time=$( date +%s )
 runtime=$( date -u -d @$(( end_time - start_time )) +"%T" )
 day=$(date +"[%d-%m-%Y] [%T]")
 
