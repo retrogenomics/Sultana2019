@@ -19,7 +19,7 @@ CURRENT_DIR=$( pwd )
 configuration_file="${CURRENT_DIR}/CONFIG"
 if [[ ! -e "${configuration_file}" ]];
 	then
-		echo -e "\nMissing configuration file $( basename ${configuration_file} ) in ${CURRENT_DIR}.\n";
+		echo -e "\nMissing configuration file $( basename "${configuration_file}" ) in ${CURRENT_DIR}.\n";
 		exit 1
 fi
 
