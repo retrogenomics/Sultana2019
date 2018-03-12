@@ -55,12 +55,24 @@ done
 sort -k1,1n mrc_dist.txt > tmp
 mv tmp mrc_dist.txt
 
-# generate a single table for importing into R
-paste denovo_dist.txt random_dist.txt mrc_dist.txt \
-> InsSpacing.tab
-sed -i '1il1neo\trandom\tmrc' InsSpacing.tab
+# spacing of motif-matched control (mmc) datasets
+echo -ne ""> mmc_dist.txt;
+for i in `seq 1 $n`; do \
+j=$( printf "%04d" $i)
+sort -k1,1 -k2,2n "${iss_folder}/datasets/l1neo/mmc_loc/hg19.l1neo.soni.mmc_loc.${j}.bed" \
+| bedtools spacing -i - \
+| awk '$7!="." {print $7}' \
+>> mmc_dist.txt;
+done
+sort -k1,1n mmc_dist.txt > tmp
+mv tmp mmc_dist.txt
 
-rm denovo_dist.txt random_dist.txt mrc_dist.txt
+# generate a single table for importing into R
+paste denovo_dist.txt random_dist.txt mrc_dist.txt mmc_dist.txt \
+> InsSpacing.tab
+sed -i '1il1neo\trandom\tmrc\tmmc' InsSpacing.tab
+
+rm denovo_dist.txt random_dist.txt mrc_dist.txt mmc_dist.txt
 
 # run R script for graphing and performing statistical tests
 Rscript --vanilla "${iss_folder}/scripts/InsSpacing.r"

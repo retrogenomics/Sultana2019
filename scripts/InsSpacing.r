@@ -17,7 +17,7 @@ mydata <- read.delim("InsSpacing.tab",
   check.names = FALSE,
 )
 mydata2 <- melt(mydata,
-  measure.vars = c("l1neo", "random", "mrc"),
+  measure.vars = c("l1neo", "random", "mrc", "mmc"),
   variable.name = "datasets",
   value.name = "distance",
   na.rm = TRUE
