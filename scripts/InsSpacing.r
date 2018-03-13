@@ -40,11 +40,17 @@ scale_x_log10(
   breaks = scales::trans_breaks("log10", function(x) 10 ^ x),
   labels = scales::trans_format("log10", scales::math_format(10 ^ .x))
 ) +
-annotation_logticks(sides = "b", size = 0.176389) +
+annotation_logticks(
+  sides = "b",
+  size = 0.176389,
+  short = unit(-0.67, "mm"),
+  mid = unit(-1.33, "mm"),
+  long = unit(-2, "mm")
+) +
 font("legend.title", size = 6) +
 font("legend.text", size = 6)
 ggpar(p,
-  xlab = "Insertion-to-insertion spacing",
+  xlab = "Insertion-to-insertion spacing (bp)",
   ylab = "Frequency",
   xlim = c(1e2, 1e7),
   ylim = c(0, 1),
