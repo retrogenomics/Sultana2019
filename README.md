@@ -1,6 +1,6 @@
 # iss
 ## Background
-Scripts used to obtain data for Sultana <I>et al.</I> manuscript.
+Scripts used to obtain data for Sultana <I>et al.</I> (2019) Mol Cell.
 - to call L1 insertions from sequencing data
 - to format datasets
 - to generate control datasets
